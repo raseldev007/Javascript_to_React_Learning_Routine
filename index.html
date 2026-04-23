@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Javascript Roadmap to React</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f6f3;
+  --surface: #ffffff;
+  --surface2: #f0efe9;
+  --border: #e3e1d9;
+  --border-strong: #ccc9bf;
+  --text: #1c1b18;
+  --text2: #4a4840;
+  --muted: #8a8880;
+  --accent: #2c5fe6;
+  --accent-bg: #eef2fd;
+  --accent-border: #c3d0f8;
+  --green: #1a7f4e;
+  --green-bg: #edf7f2;
+  --green-border: #b3ddc9;
+  --amber: #925c0a;
+  --amber-bg: #fdf5e6;
+  --amber-border: #f0d49a;
+  --red: #b33a2e;
+  --red-bg: #fdf0ee;
+  --red-border: #f2c2bc;
+  --purple: #5b3fb5;
+  --purple-bg: #f2effe;
+  --purple-border: #cfc3f2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* HERO */
+.hero {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 52px 24px 44px;
+  text-align: center;
+}
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(38px, 8vw, 72px);
+  line-height: 1.0;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.hero h1 span { color: var(--accent); }
+.hero-name {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 16px;
+  margin-bottom: 28px;
+}
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.stat-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 400;
+}
+.stat-pill strong {
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 15px;
+  display: block;
+  line-height: 1.2;
+}
+
+/* NAV */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(247,246,243,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+.nav-bar::-webkit-scrollbar { display: none; }
+.nav-inner { display: inline-flex; }
+.nav-link {
+  display: inline-block;
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.nav-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* LAYOUT */
+.container { max-width: 820px; margin: 0 auto; padding: 0 20px; }
+.section { padding: 48px 0; border-bottom: 1px solid var(--border); }
+.section:last-child { border-bottom: none; }
+.section-header { margin-bottom: 28px; }
+.section-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.section-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+/* DAILY STRUCTURE */
+.daily-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+@media (max-width: 480px) { .daily-grid { grid-template-columns: 1fr; } }
+.daily-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+}
+.daily-card .hours {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+}
+.daily-card .label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* DAY CARDS */
+.day-grid { display: flex; flex-direction: column; gap: 8px; }
+.day-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 14px;
+  align-items: start;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.day-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.day-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: right;
+  padding-right: 12px;
+  border-right: 1px solid var(--border);
+  padding-top: 2px;
+  line-height: 1.5;
+}
+.day-num span { display: block; font-size: 15px; font-weight: 600; color: var(--text2); letter-spacing: 0; }
+.day-topic {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.day-use {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-style: italic;
+  line-height: 1.5;
+}
+.day-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 5px;
+  font-family: 'DM Mono', monospace;
+  text-decoration: none;
+  display: inline-block;
+  line-height: 1.5;
+}
+.chip-r { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-border); }
+.chip-e { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.chip-p { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+.chip-proj { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.chip-rev { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+a.chip:hover { opacity: 0.8; }
+.tip-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 13px 16px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text2);
+}
+.tip-card strong { color: var(--text); font-weight: 600; }
+
+/* DEEP GRID */
+.deep-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+@media (max-width: 480px) { .deep-grid { grid-template-columns: 1fr; } }
+.deep-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.deep-topic {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+.deep-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
+
+/* REACT GRID */
+.react-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+@media (max-width: 480px) { .react-grid { grid-template-columns: 1fr; } }
+.react-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.react-card h4 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 10px;
+  font-family: 'DM Mono', monospace;
+}
+.react-card ul { list-style: none; padding: 0; }
+.react-card li {
+  font-size: 13px;
+  color: var(--text2);
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.react-card li:last-child { border-bottom: none; }
+.react-card li::before {
+  content: '';
+  width: 5px; height: 5px;
+  background: var(--border-strong);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.react-card a { color: var(--accent); text-decoration: none; font-size: 13px; }
+.react-card a:hover { text-decoration: underline; }
+
+/* PROBLEM TABLE */
+.prob-section { margin-bottom: 28px; }
+.prob-section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.prob-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+.prob-table th {
+  text-align: left;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.prob-table td {
+  padding: 9px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+}
+.prob-table tr:last-child td { border-bottom: none; }
+.prob-table tr:hover td { background: var(--surface2); }
+.diff {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.diff-easy { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.diff-med { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.diff-hard { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+.platform { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+/* ===== TRACKER ===== */
+.tracker-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.tracker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.tracker-stats { display: flex; gap: 18px; flex-wrap: wrap; }
+.t-stat { text-align: center; }
+.t-stat .t-num {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1;
+  display: block;
+}
+.t-stat .t-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.progress-bar-row { padding: 12px 18px; border-bottom: 1px solid var(--border); }
+.pb-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.pb-track { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
+.pb-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.4s ease; }
+.tracker-body { padding: 16px 18px; }
+.week-row { margin-bottom: 16px; }
+.week-row-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.days-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.t-day {
+  width: 38px;
+  height: 38px;
+  border-radius: 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  user-select: none;
+}
+.t-day:hover { border-color: var(--border-strong); }
+.t-day .dn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  line-height: 1;
+}
+.t-day .dw {
+  font-size: 9px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-top: 2px;
+}
+.t-day.done {
+  background: var(--green-bg);
+  border-color: var(--green-border);
+}
+.t-day.done .dn { color: var(--green); }
+.t-day.done .dw { color: var(--green); opacity: 0.7; }
+.t-day.done::after {
+  content: '✓';
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font-size: 8px;
+  color: var(--green);
+  font-weight: 700;
+}
+.t-day.today {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+.t-day.today .dn { color: var(--accent); }
+.t-day.today .dw { color: var(--accent); opacity: 0.7; }
+.t-day.today::before {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.t-day.done.today { background: var(--green-bg); border-color: var(--green-border); }
+.tracker-legend {
+  display: flex;
+  gap: 16px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+.legend-dot {
+  width: 14px; height: 14px;
+  border-radius: 4px;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+.ld-done { background: var(--green-bg); border-color: var(--green-border); }
+.ld-today { background: var(--accent-bg); border-color: var(--accent); }
+.ld-empty { background: var(--surface2); border-color: var(--border); }
+.reset-btn {
+  margin-left: auto;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 4px 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: color 0.15s, border-color 0.15s;
+}
+.reset-btn:hover { color: var(--red); border-color: var(--red-border); }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 40px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.footer-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.footer-sub { font-size: 13px; color: var(--muted); }
+
+@media (max-width: 480px) {
+  .t-day { width: 34px; height: 34px; }
+  .t-day .dn { font-size: 11px; }
+  .t-day .dw { font-size: 8px; }
+  .days-row { gap: 4px; }
+  .tracker-stats { gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">2-Month Study Plan · Vanilla JS → React</div>
+  <h1>Javascript Learning<br><span>Full Roadmap</span><br>to React</h1>
+  <div class="hero-name">Md. Rasel</div>
+  <div class="stats-row">
+    <div class="stat-pill"><strong>8</strong>Weeks</div>
+    <div class="stat-pill"><strong>56</strong>Days</div>
+    <div class="stat-pill"><strong>6h</strong>Per Day</div>
+    <div class="stat-pill"><strong>100+</strong>Problems</div>
+    <div class="stat-pill"><strong>4+</strong>Projects</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <a class="nav-link" href="#structure">Structure</a>
+    <a class="nav-link" href="#week1">Week 1</a>
+    <a class="nav-link" href="#week2">Week 2</a>
+    <a class="nav-link" href="#week3">Week 3</a>
+    <a class="nav-link" href="#week4">Week 4</a>
+    <a class="nav-link" href="#week56">Week 5–6</a>
+    <a class="nav-link" href="#week78">Week 7–8</a>
+    <a class="nav-link" href="#problems">Problems</a>
+    <a class="nav-link" href="#tracker">Tracker</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- DAILY STRUCTURE -->
+  <section class="section" id="structure">
+    <div class="section-header">
+      <div class="section-tag">01 — Daily Routine</div>
+      <div class="section-title">Your Daily Structure</div>
+    </div>
+    <div class="daily-grid">
+      <div class="daily-card">
+        <div class="hours">2h</div>
+        <div class="label">Learning</div>
+      </div>
+      <div class="daily-card">
+        <div class="hours">3h</div>
+        <div class="label">Practice</div>
+      </div>
+      <div class="daily-card">
+        <div class="hours">1h</div>
+        <div class="label">Problems</div>
+      </div>
+    </div>
+    <div class="tip-card"><strong>How to use this roadmap —</strong> Read the topic from the given resource first. Then code the exercise yourself from scratch — no copy-paste. Finally, solve the daily problem. Revise every Sunday. Consistency is everything.</div>
+  </section>
+
+  <!-- WEEK 1 -->
+  <section class="section" id="week1">
+    <div class="section-header">
+      <div class="section-tag">02 — Week 1</div>
+      <div class="section-title">Core Fundamentals</div>
+    </div>
+    <div class="day-grid">
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>01</span></div>
+        <div>
+          <div class="day-topic">Variables &amp; Data Types</div>
+          <div class="day-use">How JavaScript stores and categorizes data — strings, numbers, booleans, null, undefined.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank">MDN Guide</a>
+            <a class="chip chip-r" href="https://javascript.info/variables" target="_blank">JavaScript.info</a>
+            <span class="chip chip-e">Declare 10 variables of different types</span>
+            <span class="chip chip-p">LeetCode: Two Sum (Easy)</span>
+            <span class="chip chip-p">Codeforces: Watermelon (800)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>02</span></div>
+        <div>
+          <div class="day-topic">Operators &amp; Conditionals</div>
+          <div class="day-use">Make decisions in code — if/else, ternary, comparison and logical operators.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/operators" target="_blank">JS.info: Operators</a>
+            <a class="chip chip-r" href="https://javascript.info/ifelse" target="_blank">JS.info: Conditionals</a>
+            <span class="chip chip-e">Build a grading system (A/B/C/D/F)</span>
+            <span class="chip chip-p">LeetCode: Palindrome Number</span>
+            <span class="chip chip-p">Codeforces: Next Round</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>03</span></div>
+        <div>
+          <div class="day-topic">Loops</div>
+          <div class="day-use">Repeat code blocks — for, while, do-while, for...of. Used everywhere: iterating lists, processing data, building UIs.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/while-for" target="_blank">JS.info: Loops</a>
+            <span class="chip chip-e">Print number triangle patterns</span>
+            <span class="chip chip-p">LeetCode: FizzBuzz</span>
+            <span class="chip chip-p">Codeforces: Bit++ (1000)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>04</span></div>
+        <div>
+          <div class="day-topic">Functions</div>
+          <div class="day-use">Reusable blocks of logic — declaration, expression, parameters, return values. The building block of every JS program.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/function-basics" target="_blank">JS.info: Functions</a>
+            <span class="chip chip-e">Build 5 calculator functions</span>
+            <span class="chip chip-p">LeetCode: Add Digits</span>
+            <span class="chip chip-p">Codeforces: Domino Piling</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>05</span></div>
+        <div>
+          <div class="day-topic">Arrays</div>
+          <div class="day-use">Ordered lists of data. Used to store collections — users, products, scores. Core to almost every real app.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/array" target="_blank">JS.info: Arrays</a>
+            <span class="chip chip-e">Reverse array without .reverse()</span>
+            <span class="chip chip-p">LeetCode: Contains Duplicate</span>
+            <span class="chip chip-p">LeetCode: Best Time to Buy Stock</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>06</span></div>
+        <div>
+          <div class="day-topic">Objects</div>
+          <div class="day-use">Key-value data structures — how real data is modeled. Users, products, configs. Everything in JS is an object at the core.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/object" target="_blank">JS.info: Objects</a>
+            <span class="chip chip-e">Create a user profile object with methods</span>
+            <span class="chip chip-p">LeetCode: Valid Anagram</span>
+            <span class="chip chip-p">LeetCode: Two Sum (object approach)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>07</span></div>
+        <div>
+          <div class="day-topic">Revision + Problem Sprint</div>
+          <div class="day-use">Revise all topics from Day 1–6. Solve 10+ easy problems from memory.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://www.codewars.com/" target="_blank">Codewars 8–7 kyu</a>
+            <a class="chip chip-r" href="https://leetcode.com/problemset/?difficulty=EASY" target="_blank">LeetCode Easy</a>
+            <span class="chip chip-rev">Revision Day — No new topics</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WEEK 2 -->
+  <section class="section" id="week2">
+    <div class="section-header">
+      <div class="section-tag">03 — Week 2</div>
+      <div class="section-title">Modern JavaScript (ES6+)</div>
+    </div>
+    <div class="day-grid">
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>08</span></div>
+        <div>
+          <div class="day-topic">Arrow Functions</div>
+          <div class="day-use">Cleaner syntax for functions. Used in callbacks, array methods, and React components constantly.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/arrow-functions-basics" target="_blank">JS.info: Arrow Functions</a>
+            <span class="chip chip-e">Convert 5 normal functions to arrow functions</span>
+            <span class="chip chip-p">Codewars: Basic arrow katas</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>09</span></div>
+        <div>
+          <div class="day-topic">Array Methods: map, filter, reduce</div>
+          <div class="day-use">Transform and filter data without loops. Used in every React app to render lists, filter searches, calculate totals.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/array-methods" target="_blank">JS.info: Array Methods</a>
+            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank">MDN Array API</a>
+            <span class="chip chip-e">Filter even numbers, map to doubled values</span>
+            <span class="chip chip-p">LeetCode: Move Zeroes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>10</span></div>
+        <div>
+          <div class="day-topic">Destructuring</div>
+          <div class="day-use">Extract values from arrays/objects cleanly. Core React syntax — props destructuring, useState, imports.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/destructuring-assignment" target="_blank">JS.info: Destructuring</a>
+            <span class="chip chip-e">Destructure a user object and array of scores</span>
+            <span class="chip chip-p">LeetCode: Assign Cookies</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>11</span></div>
+        <div>
+          <div class="day-topic">Spread &amp; Rest Operators</div>
+          <div class="day-use">Copy/merge arrays and objects. Used constantly in React state updates: spread old state + new value.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/rest-parameters-spread" target="_blank">JS.info: Spread &amp; Rest</a>
+            <span class="chip chip-e">Merge two user objects, clone array without mutating</span>
+            <span class="chip chip-p">Codewars: Merge objects kata</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>12</span></div>
+        <div>
+          <div class="day-topic">Template Literals</div>
+          <div class="day-use">Dynamic strings with embedded expressions. Used in HTML generation, API URLs, error messages.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/string" target="_blank">JS.info: Strings</a>
+            <span class="chip chip-e">Build a dynamic email template with variables</span>
+            <span class="chip chip-p">LeetCode: Defanging an IP Address</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>13</span></div>
+        <div>
+          <div class="day-topic">Closures (Intro)</div>
+          <div class="day-use">Functions that remember their outer scope. Used in event handlers, factories, and React hooks — useState is built on closures.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/closure" target="_blank">JS.info: Closures</a>
+            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures" target="_blank">MDN: Closures</a>
+            <span class="chip chip-e">Build a counter factory using closures</span>
+            <span class="chip chip-p">Codewars: Make a counter</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>14</span></div>
+        <div>
+          <div class="day-topic">Revision + Problem Sprint</div>
+          <div class="day-use">Revise ES6+ syntax. Write code using every new feature from memory. Solve 8+ problems.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://www.codewars.com/" target="_blank">Codewars 7 kyu</a>
+            <span class="chip chip-rev">Revision Day</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WEEK 3 -->
+  <section class="section" id="week3">
+    <div class="section-header">
+      <div class="section-tag">04 — Week 3</div>
+      <div class="section-title">DOM &amp; Browser</div>
+    </div>
+    <div class="day-grid">
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>15–16</span></div>
+        <div>
+          <div class="day-topic">DOM Basics &amp; Selecting Elements</div>
+          <div class="day-use">How JavaScript controls what's displayed — getElementById, querySelector, textContent, innerHTML, classList.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction" target="_blank">MDN: DOM Intro</a>
+            <a class="chip chip-r" href="https://javascript.info/dom-nodes" target="_blank">JS.info: DOM Nodes</a>
+            <span class="chip chip-e">Change heading text and color with JS</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>17</span></div>
+        <div>
+          <div class="day-topic">Events &amp; Event Listeners</div>
+          <div class="day-use">Respond to user actions — clicks, input, keyboard, mouse. The core of all interactive web apps.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/introduction-browser-events" target="_blank">JS.info: Events</a>
+            <span class="chip chip-e">Button click counter + color toggle</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>18–19</span></div>
+        <div>
+          <div class="day-topic">Forms &amp; Validation</div>
+          <div class="day-use">Read user input, validate it, show errors. Core for login, signup, contact forms in any app.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/forms-controls" target="_blank">JS.info: Forms</a>
+            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation" target="_blank">MDN: Validation</a>
+            <span class="chip chip-e">Email + password form with live validation</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>20–21</span></div>
+        <div>
+          <div class="day-topic">Project: Todo App</div>
+          <div class="day-use">Combines DOM selection, events, form input, arrays, localStorage. Your first real project to show.</div>
+          <div class="day-meta">
+            <span class="chip chip-proj">Add / delete / mark done</span>
+            <span class="chip chip-proj">Save to localStorage</span>
+            <span class="chip chip-proj">Filter: All / Active / Done</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WEEK 4 -->
+  <section class="section" id="week4">
+    <div class="section-header">
+      <div class="section-tag">05 — Week 4</div>
+      <div class="section-title">Async JavaScript</div>
+    </div>
+    <div class="day-grid">
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>22</span></div>
+        <div>
+          <div class="day-topic">Callbacks</div>
+          <div class="day-use">Passing functions as arguments to run later. Foundation of async JS — understand this before Promises.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/callbacks" target="_blank">JS.info: Callbacks</a>
+            <span class="chip chip-e">Simulate API call with setTimeout callback</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>23</span></div>
+        <div>
+          <div class="day-topic">Promises</div>
+          <div class="day-use">Handle async operations cleanly. Avoid callback hell. Used in every fetch call, database query, file read.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/promise-basics" target="_blank">JS.info: Promises</a>
+            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank">MDN: Promise</a>
+            <span class="chip chip-e">Create and chain 3 promises</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>24</span></div>
+        <div>
+          <div class="day-topic">Async / Await</div>
+          <div class="day-use">Cleaner syntax for Promises. Makes async code look synchronous. This is what you'll write in every real project.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/async-await" target="_blank">JS.info: Async/Await</a>
+            <span class="chip chip-e">Convert a Promise chain to async/await</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>25–26</span></div>
+        <div>
+          <div class="day-topic">Fetch API + Working with JSON</div>
+          <div class="day-use">Get data from the internet. How every web app loads data from a server — weather, users, products.</div>
+          <div class="day-meta">
+            <a class="chip chip-r" href="https://javascript.info/fetch" target="_blank">JS.info: Fetch</a>
+            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" target="_blank">MDN: Fetch API</a>
+            <span class="chip chip-e">Fetch user list from JSONPlaceholder and display</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-card">
+        <div class="day-num">DAY<span>27–28</span></div>
+        <div>
+          <div class="day-topic">Project: Weather App</div>
+          <div class="day-use">Puts together fetch, async/await, DOM updates, and JSON parsing in one real app.</div>
+          <div class="day-meta">
+            <span class="chip chip-proj">Search city → OpenWeatherMap API</span>
+            <span class="chip chip-proj">Show temp, condition, humidity</span>
+            <span class="chip chip-proj">Handle loading + error states</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WEEK 5-6 -->
+  <section class="section" id="week56">
+    <div class="section-header">
+      <div class="section-tag">06 — Week 5–6</div>
+      <div class="section-title">Deep JavaScript</div>
+    </div>
+    <div class="deep-grid">
+
+      <div class="deep-card">
+        <div class="day-topic">Closures (Deep Dive)</div>
+        <div class="deep-desc">Lexical scope, variable capture, module pattern. How React useState really works internally.</div>
+        <a class="chip chip-r" href="https://javascript.info/closure" target="_blank">JS.info: Closure</a>
+      </div>
+
+      <div class="deep-card">
+        <div class="day-topic">The Event Loop</div>
+        <div class="deep-desc">Call stack, task queue, microtask queue. Why setTimeout(fn, 0) runs after synchronous code.</div>
+        <a class="chip chip-r" href="https://javascript.info/event-loop" target="_blank">JS.info: Event Loop</a>
+      </div>
+
+      <div class="deep-card">
+        <div class="day-topic">The <code style="font-family:'DM Mono';font-size:13px;background:var(--surface2);padding:1px 5px;border-radius:3px;">this</code> Keyword</div>
+        <div class="deep-desc">Context-dependent execution. How this behaves in methods, constructors, arrow functions, and callbacks.</div>
+        <a class="chip chip-r" href="https://javascript.info/object-methods" target="_blank">JS.info: this</a>
+      </div>
+
+      <div class="deep-card">
+        <div class="day-topic">Prototypes &amp; Inheritance</div>
+        <div class="deep-desc">How JS objects inherit from each other — prototype chain, Object.create(), class syntax under the hood.</div>
+        <a class="chip chip-r" href="https://javascript.info/prototypes" target="_blank">JS.info: Prototypes</a>
+      </div>
+
+      <div class="deep-card">
+        <div class="day-topic">Error Handling</div>
+        <div class="deep-desc">try/catch/finally, custom errors, handling async errors. Essential for production-quality code.</div>
+        <a class="chip chip-r" href="https://javascript.info/error-handling" target="_blank">JS.info: Error Handling</a>
+      </div>
+
+      <div class="deep-card">
+        <div class="day-topic">ES Modules</div>
+        <div class="deep-desc">import/export, named vs default exports. How modern JS codebases are structured. Required for React.</div>
+        <a class="chip chip-r" href="https://javascript.info/modules-intro" target="_blank">JS.info: Modules</a>
+      </div>
+
+    </div>
+    <div class="tip-card" style="margin-top:14px;"><strong>Deep Dive Exercise —</strong> For each topic: write a code example from scratch that demonstrates the concept, then write a 3-sentence plain-English explanation of what it does. Teaching is the deepest form of learning.</div>
+  </section>
+
+  <!-- WEEK 7-8 -->
+  <section class="section" id="week78">
+    <div class="section-header">
+      <div class="section-tag">07 — Week 7–8</div>
+      <div class="section-title">React Fundamentals</div>
+    </div>
+    <div class="react-grid">
+      <div class="react-card">
+        <h4>Core Concepts</h4>
+        <ul>
+          <li>Components (function-based)</li>
+          <li>JSX syntax</li>
+          <li>Props — passing data down</li>
+          <li>State with useState</li>
+          <li>Re-rendering logic</li>
+        </ul>
+      </div>
+      <div class="react-card">
+        <h4>Hooks</h4>
+        <ul>
+          <li>useState — local state</li>
+          <li>useEffect — side effects</li>
+          <li>useRef — DOM refs</li>
+          <li>useContext — shared state</li>
+          <li>Custom hooks</li>
+        </ul>
+      </div>
+      <div class="react-card">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="https://react.dev/learn" target="_blank">React Official Docs (react.dev)</a></li>
+          <li><a href="https://javascript.info/" target="_blank">JS.info for JS concepts</a></li>
+          <li><a href="https://www.youtube.com/@TheNetNinja" target="_blank">The Net Ninja — YouTube</a></li>
+          <li><a href="https://scrimba.com/learn/learnreact" target="_blank">Scrimba: Learn React</a></li>
+        </ul>
+      </div>
+      <div class="react-card">
+        <h4>Projects to Build</h4>
+        <ul>
+          <li>React Todo App (with hooks)</li>
+          <li>GitHub User Search (API + fetch)</li>
+          <li>Movie Browser (TMDB API)</li>
+          <li>Portfolio site (deploy on Vercel)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEMS -->
+  <section class="section" id="problems">
+    <div class="section-header">
+      <div class="section-tag">08 — Problem List</div>
+      <div class="section-title">100+ Curated Problems</div>
+    </div>
+
+    <div class="prob-section">
+      <h3>Week 1–2 · Arrays &amp; Strings</h3>
+      <table class="prob-table">
+        <thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead>
+        <tbody>
+          <tr><td>Two Sum</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Palindrome Number</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>FizzBuzz</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Contains Duplicate</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Valid Anagram</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Best Time to Buy Stock</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Move Zeroes</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Reverse String</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Single Number</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Majority Element</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Watermelon</td><td class="platform">Codeforces</td><td><span class="diff diff-easy">800</span></td></tr>
+          <tr><td>Next Round</td><td class="platform">Codeforces</td><td><span class="diff diff-easy">800</span></td></tr>
+          <tr><td>Bit++</td><td class="platform">Codeforces</td><td><span class="diff diff-easy">1000</span></td></tr>
+          <tr><td>Domino Piling</td><td class="platform">Codeforces</td><td><span class="diff diff-easy">1000</span></td></tr>
+          <tr><td>Reverse Integer</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prob-section">
+      <h3>Week 3–4 · Logic &amp; Functions</h3>
+      <table class="prob-table">
+        <thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead>
+        <tbody>
+          <tr><td>Climbing Stairs</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Fibonacci Number</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Power of Two</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Count Odd Numbers in Range</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Add Digits</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Assign Cookies</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Maximum Subarray</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>3Sum</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Product Except Self</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Lucky Numbers</td><td class="platform">Codeforces</td><td><span class="diff diff-easy">1100</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prob-section">
+      <h3>Week 5–6 · Intermediate Logic</h3>
+      <table class="prob-table">
+        <thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead>
+        <tbody>
+          <tr><td>Valid Parentheses</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Binary Search</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Search Insert Position</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Min Stack</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Group Anagrams</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Top K Frequent Elements</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Encode &amp; Decode Strings</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Longest Consecutive Sequence</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Find Min in Rotated Array</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Sort Colors</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prob-section">
+      <h3>Week 7–8 · React-Friendly JS (LeetCode JS30)</h3>
+      <table class="prob-table">
+        <thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead>
+        <tbody>
+          <tr><td>Array Prototype Last</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Counter II</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Filter Elements by Type</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-easy">Easy</span></td></tr>
+          <tr><td>Flatten Deeply Nested Array</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Debounce</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Memoize</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Curry</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-med">Medium</span></td></tr>
+          <tr><td>Promise All</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-med">Medium</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- TRACKER -->
+  <section class="section" id="tracker">
+    <div class="section-header">
+      <div class="section-tag">09 — Progress</div>
+      <div class="section-title">56-Day Study Tracker</div>
+    </div>
+
+    <div class="tracker-wrap">
+
+      <div class="tracker-header">
+        <div class="tracker-stats">
+          <div class="t-stat">
+            <span class="t-num" id="stat-done">0</span>
+            <span class="t-lbl">Done</span>
+          </div>
+          <div class="t-stat">
+            <span class="t-num" id="stat-left">56</span>
+            <span class="t-lbl">Remaining</span>
+          </div>
+          <div class="t-stat">
+            <span class="t-num" id="stat-streak">0</span>
+            <span class="t-lbl">Streak</span>
+          </div>
+          <div class="t-stat">
+            <span class="t-num" id="stat-pct">0%</span>
+            <span class="t-lbl">Complete</span>
+          </div>
+        </div>
+        <button class="reset-btn" id="reset-btn">Reset</button>
+      </div>
+
+      <div class="progress-bar-row">
+        <div class="pb-label">
+          <span id="pb-label-left">0 of 56 days completed</span>
+          <span id="pb-label-right">0%</span>
+        </div>
+        <div class="pb-track">
+          <div class="pb-fill" id="pb-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="tracker-body" id="tracker-body"></div>
+
+      <div class="tracker-legend">
+        <div class="legend-item"><div class="legend-dot ld-done"></div>Completed</div>
+        <div class="legend-item"><div class="legend-dot ld-today"></div>Today</div>
+        <div class="legend-item"><div class="legend-dot ld-empty"></div>Not done</div>
+        <div class="legend-item" style="margin-left:auto; color:var(--muted); font-size:12px;" id="start-label"></div>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-name">Md. Rasel</div>
+  <div class="footer-sub">Consistency beats intensity. Show up every day.</div>
+</div>
+
+<script>
+(function() {
+  var STORAGE_KEY = 'rasel_roadmap_v2';
+  var WDAYS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+    catch(e) { return {}; }
+  }
+  function save(data) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+  }
+
+  var data = load();
+  // data.startDate: ISO date string of day 1
+  // data.done: object { "1": true, "5": true, ... }
+
+  if (!data.startDate) {
+    data.startDate = new Date().toISOString().slice(0,10);
+    data.done = {};
+    save(data);
+  }
+  if (!data.done) { data.done = {}; }
+
+  function parseLocalDate(str) {
+    var p = str.split('-');
+    return new Date(+p[0], +p[1]-1, +p[2]);
+  }
+
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+  function pad(n) { return n < 10 ? '0'+n : ''+n; }
+
+  function dayIndexForDate(dateStr) {
+    var start = parseLocalDate(data.startDate);
+    var target = parseLocalDate(dateStr);
+    var diff = Math.round((target - start) / 86400000);
+    return diff + 1; // day 1 = startDate
+  }
+
+  function dateForDayIndex(idx) {
+    var start = parseLocalDate(data.startDate);
+    var d = new Date(start.getTime() + (idx-1)*86400000);
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+
+  function calcStreak() {
+    // streak = consecutive done days ending at today or latest done day
+    var streak = 0;
+    var today = dayIndexForDate(todayStr());
+    // check backwards from today
+    for (var i = Math.min(today, 56); i >= 1; i--) {
+      if (data.done[i]) streak++;
+      else break;
+    }
+    return streak;
+  }
+
+  function updateStats() {
+    var done = Object.keys(data.done).filter(function(k){ return data.done[k]; }).length;
+    var pct = Math.round(done/56*100);
+    document.getElementById('stat-done').textContent = done;
+    document.getElementById('stat-left').textContent = 56 - done;
+    document.getElementById('stat-streak').textContent = calcStreak();
+    document.getElementById('stat-pct').textContent = pct + '%';
+    document.getElementById('pb-fill').style.width = pct + '%';
+    document.getElementById('pb-label-left').textContent = done + ' of 56 days completed';
+    document.getElementById('pb-label-right').textContent = pct + '%';
+    // start label
+    var sl = document.getElementById('start-label');
+    if (sl) {
+      var sd = parseLocalDate(data.startDate);
+      sl.textContent = 'Started: ' + sd.toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+    }
+  }
+
+  function buildTracker() {
+    var body = document.getElementById('tracker-body');
+    body.innerHTML = '';
+    var today = dayIndexForDate(todayStr());
+
+    for (var w = 0; w < 8; w++) {
+      var weekDiv = document.createElement('div');
+      weekDiv.className = 'week-row';
+      var label = document.createElement('div');
+      label.className = 'week-row-label';
+      label.textContent = 'Week ' + (w+1);
+      weekDiv.appendChild(label);
+
+      var row = document.createElement('div');
+      row.className = 'days-row';
+
+      for (var d = 1; d <= 7; d++) {
+        var dayNum = w*7 + d;
+        var tile = document.createElement('div');
+        tile.className = 't-day';
+
+        var isDone = !!data.done[dayNum];
+        var isToday = (dayNum === today);
+
+        if (isDone) tile.classList.add('done');
+        if (isToday) tile.classList.add('today');
+
+        var dn = document.createElement('div');
+        dn.className = 'dn';
+        dn.textContent = dayNum;
+
+        var dateStr = dateForDayIndex(dayNum);
+        var dateObj = parseLocalDate(dateStr);
+        var dw = document.createElement('div');
+        dw.className = 'dw';
+        dw.textContent = WDAYS[dateObj.getDay()];
+
+        tile.appendChild(dn);
+        tile.appendChild(dw);
+        tile.title = 'Day ' + dayNum + ' — ' + dateObj.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+
+        (function(num, el) {
+          el.addEventListener('click', function() {
+            if (data.done[num]) {
+              delete data.done[num];
+              el.classList.remove('done');
+            } else {
+              data.done[num] = true;
+              el.classList.add('done');
+            }
+            save(data);
+            updateStats();
+          });
+        })(dayNum, tile);
+
+        row.appendChild(tile);
+      }
+      weekDiv.appendChild(row);
+      body.appendChild(weekDiv);
+    }
+    updateStats();
+  }
+
+  document.getElementById('reset-btn').addEventListener('click', function() {
+    if (confirm('Reset all progress? This cannot be undone.')) {
+      data.done = {};
+      data.startDate = new Date().toISOString().slice(0,10);
+      save(data);
+      buildTracker();
+    }
+  });
+
+  buildTracker();
+})();
+</script>
+
+</body>
+</html>
