@@ -1,1040 +1,620 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f7f6f3">
+<meta name="theme-color" content="#f7f6f3" id="meta-theme-color">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="description" content="2-Month JavaScript to React roadmap for Md. Rasel — step-by-step, day-by-day.">
-<title>Md. Rasel — JS Roadmap to React</title>
+<meta name="description" content="2-Month JavaScript to React Roadmap — sign in to track your progress.">
+<title>JS Roadmap to React</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<!-- ============================================================
+     GOOGLE CLIENT ID SETUP
+     ============================================================
+     To enable Google Sign-In:
+     1. Go to https://console.cloud.google.com/
+     2. Create a project → APIs & Services → Credentials
+     3. Create OAuth 2.0 Client ID (type: Web application)
+     4. Add your domain to Authorized JavaScript Origins
+        e.g. https://yourname.github.io
+     5. Replace 'YOUR_GOOGLE_CLIENT_ID' below with your actual ID
+     
+     Without a real Client ID, the app runs in Guest mode automatically.
+     Host this file on GitHub Pages / Netlify for Google auth to work.
+     ============================================================ -->
+
 <style>
+/* ===================== THEME VARIABLES ===================== */
 :root {
-  --bg: #f7f6f3;
-  --surface: #ffffff;
-  --surface2: #f0efe9;
-  --border: #e3e1d9;
-  --border-strong: #ccc9bf;
-  --text: #1c1b18;
-  --text2: #4a4840;
-  --muted: #8a8880;
-  --accent: #2c5fe6;
-  --accent-bg: #eef2fd;
-  --accent-border: #c3d0f8;
-  --green: #1a7f4e;
-  --green-bg: #edf7f2;
-  --green-border: #b3ddc9;
-  --amber: #925c0a;
-  --amber-bg: #fdf5e6;
-  --amber-border: #f0d49a;
-  --red: #b33a2e;
-  --red-bg: #fdf0ee;
-  --red-border: #f2c2bc;
-  --purple: #5b3fb5;
-  --purple-bg: #f2effe;
-  --purple-border: #cfc3f2;
+  --bg:#f7f6f3; --surface:#fff; --surface2:#f0efe9;
+  --border:#e3e1d9; --border-strong:#ccc9bf;
+  --text:#1c1b18; --text2:#4a4840; --muted:#8a8880;
+  --accent:#2c5fe6; --accent-bg:#eef2fd; --accent-border:#c3d0f8;
+  --green:#1a7f4e; --green-bg:#edf7f2; --green-border:#b3ddc9;
+  --amber:#925c0a; --amber-bg:#fdf5e6; --amber-border:#f0d49a;
+  --red:#b33a2e; --red-bg:#fdf0ee; --red-border:#f2c2bc;
+  --purple:#5b3fb5; --purple-bg:#f2effe; --purple-border:#cfc3f2;
+  --shadow:0 1px 4px rgba(0,0,0,.07);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.12);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
-  line-height: 1.7;
+[data-theme="dark"] {
+  --bg:#0d0f14; --surface:#161a23; --surface2:#1e2330;
+  --border:#252d3e; --border-strong:#3a4256;
+  --text:#e8edf5; --text2:#a8b4cc; --muted:#566080;
+  --accent:#5b8cf7; --accent-bg:#1a2340; --accent-border:#2d4080;
+  --green:#4ade80; --green-bg:#0d2318; --green-border:#1a4a2e;
+  --amber:#fbbf24; --amber-bg:#221b08; --amber-border:#4a3812;
+  --red:#f87171; --red-bg:#220e0e; --red-border:#4a1c1c;
+  --purple:#a78bfa; --purple-bg:#160f2a; --purple-border:#301e58;
+  --shadow:0 1px 4px rgba(0,0,0,.35);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.55);
 }
 
-/* HERO */
-.hero {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 52px 24px 44px;
-  text-align: center;
+/* ===================== BASE ===================== */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.7;transition:background .2s,color .2s}
+
+/* ===================== AUTH SCREEN ===================== */
+#auth-screen{
+  display:none;min-height:100vh;align-items:center;justify-content:center;
+  background:var(--bg);padding:24px;flex-direction:column;gap:20px;
 }
-.hero-eyebrow {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 14px;
+#auth-screen.active{display:flex}
+.auth-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:40px 36px;max-width:400px;width:100%;text-align:center;box-shadow:var(--shadow-lg);
 }
-.hero h1 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(38px, 8vw, 72px);
-  line-height: 1.0;
-  letter-spacing: 0.02em;
-  color: var(--text);
-  margin-bottom: 16px;
+.auth-brand{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;
+  color:var(--text);margin-bottom:4px;
 }
-.hero h1 span { color: var(--accent); }
-.hero-name {
-  display: inline-block;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--muted);
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 5px 16px;
-  margin-bottom: 28px;
+.auth-brand span{color:var(--accent)}
+.auth-eyebrow{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:28px;
 }
-.stats-row {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
+.auth-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+.google-signin-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:11px 20px;background:var(--surface);
+  border:1px solid var(--border-strong);border-radius:8px;font-size:14px;
+  font-weight:500;color:var(--text);cursor:pointer;
+  transition:background .15s,box-shadow .15s;font-family:'DM Sans',sans-serif;
+  margin-bottom:12px;
 }
-.stat-pill {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 13px;
-  color: var(--text2);
-  font-weight: 400;
+.google-signin-btn:hover{background:var(--surface2);box-shadow:var(--shadow)}
+.auth-divider{
+  display:flex;align-items:center;gap:12px;margin:14px 0;
+  color:var(--muted);font-size:12px;
 }
-.stat-pill strong {
-  font-weight: 600;
-  color: var(--accent);
-  font-size: 15px;
-  display: block;
-  line-height: 1.2;
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.guest-btn{
+  width:100%;padding:10px;background:none;border:1px solid var(--border);
+  border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:border-color .15s,color .15s;
+}
+.guest-btn:hover{border-color:var(--border-strong);color:var(--text2)}
+.auth-notice{
+  max-width:400px;width:100%;background:var(--amber-bg);border:1px solid var(--amber-border);
+  border-radius:10px;padding:12px 16px;font-size:12px;color:var(--amber);
+  text-align:left;line-height:1.7;
+}
+.auth-notice strong{font-weight:600;display:block;margin-bottom:2px}
+.auth-notice a{color:var(--accent)}
+.auth-footer{margin-top:20px;font-size:11px;color:var(--muted);line-height:1.6}
+
+/* ===================== TOPBAR ===================== */
+#topbar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 20px;height:52px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:200;
+  transition:background .2s;
+}
+.topbar-brand{
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--text2);
+}
+.topbar-brand span{color:var(--accent)}
+.topbar-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{
+  width:34px;height:34px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;color:var(--text2);transition:background .15s,border-color .15s;
+}
+.icon-btn:hover{background:var(--border)}
+.avatar-btn{
+  width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--accent-bg);cursor:pointer;overflow:hidden;display:flex;
+  align-items:center;justify-content:center;font-size:13px;font-weight:700;
+  color:var(--accent);transition:border-color .15s;flex-shrink:0;
+}
+.avatar-btn:hover{border-color:var(--accent)}
+.avatar-btn img{width:100%;height:100%;object-fit:cover;display:block}
+#avatar-initials{font-family:'DM Sans',sans-serif}
+
+/* ===================== NAV BAR ===================== */
+#nav-bar{
+  background:var(--bg);border-bottom:1px solid var(--border);
+  padding:0 20px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;
+  position:sticky;top:52px;z-index:100;transition:background .2s;
+  backdrop-filter:blur(8px);
+}
+#nav-bar::-webkit-scrollbar{display:none}
+.nav-inner{display:inline-flex}
+.nav-link{
+  display:inline-block;padding:12px 14px;font-size:12px;font-weight:500;
+  color:var(--muted);text-decoration:none;letter-spacing:.04em;text-transform:uppercase;
+  font-family:'DM Mono',monospace;border-bottom:2px solid transparent;
+  transition:color .15s,border-color .15s;
+}
+.nav-link:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-link.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+
+/* ===================== LAYOUT ===================== */
+.container{max-width:820px;margin:0 auto;padding:0 20px}
+.section{padding:48px 0;border-bottom:1px solid var(--border)}
+.section:last-child{border-bottom:none}
+.section-header{margin-bottom:28px}
+.section-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.section-title{font-size:22px;font-weight:600;color:var(--text);line-height:1.3}
+
+/* ===================== HERO ===================== */
+.hero{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:52px 24px 44px;text-align:center;transition:background .2s;
+}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.hero h1{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,8vw,76px);
+  line-height:1.0;letter-spacing:.02em;color:var(--text);margin-bottom:10px;
+}
+.hero h1 span{color:var(--accent)}
+.hero-user-line{font-size:14px;color:var(--muted);margin-bottom:28px}
+.hero-user-line strong{color:var(--text);font-weight:600}
+.stats-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.stat-pill{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:8px 16px;font-size:13px;color:var(--text2);
+}
+.stat-pill strong{font-weight:600;color:var(--accent);font-size:15px;display:block;line-height:1.2}
+
+/* ===================== DAY CARDS ===================== */
+.daily-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:480px){.daily-grid{grid-template-columns:1fr}}
+.daily-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;text-align:center}
+.daily-card .hours{font-size:28px;font-weight:600;color:var(--accent);line-height:1}
+.daily-card .label{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.08em}
+.day-grid{display:flex;flex-direction:column;gap:8px}
+.day-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;display:grid;grid-template-columns:46px 1fr;gap:14px;
+  align-items:start;transition:border-color .15s,box-shadow .15s;
+}
+.day-card:hover{border-color:var(--border-strong);box-shadow:var(--shadow)}
+.day-num{
+  font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.06em;text-align:right;
+  padding-right:12px;border-right:1px solid var(--border);padding-top:2px;line-height:1.5;
+}
+.day-num span{display:block;font-size:15px;font-weight:600;color:var(--text2);letter-spacing:0}
+.day-topic{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px}
+.day-use{font-size:12px;color:var(--muted);margin-bottom:10px;font-style:italic;line-height:1.5}
+.day-meta{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:11px;padding:3px 9px;border-radius:5px;font-family:'DM Mono',monospace;text-decoration:none;display:inline-block;line-height:1.5}
+.chip-r{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-border)}
+.chip-e{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.chip-p{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.chip-proj{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.chip-rev{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}
+a.chip:hover{opacity:.8}
+.tip-card{
+  background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);
+  border-radius:8px;padding:13px 16px;margin-top:12px;font-size:13px;color:var(--text2);
+}
+.tip-card strong{color:var(--text);font-weight:600}
+
+/* ===================== DEEP / REACT / PROB ===================== */
+.deep-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:480px){.deep-grid{grid-template-columns:1fr}}
+.deep-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.deep-topic{font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px}
+.deep-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.react-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:480px){.react-grid{grid-template-columns:1fr}}
+.react-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.react-card h4{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:10px;font-family:'DM Mono',monospace}
+.react-card ul{list-style:none}
+.react-card li{font-size:13px;color:var(--text2);padding:5px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.react-card li:last-child{border-bottom:none}
+.react-card li::before{content:'';width:5px;height:5px;background:var(--border-strong);border-radius:50%;flex-shrink:0}
+.react-card a{color:var(--accent);text-decoration:none;font-size:13px}
+.react-card a:hover{text-decoration:underline}
+.prob-section{margin-bottom:28px}
+.prob-section h3{font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.prob-table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.prob-table th{text-align:left;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.prob-table td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--border);color:var(--text2)}
+.prob-table tr:last-child td{border-bottom:none}
+.prob-table tr:hover td{background:var(--surface2)}
+.diff{font-size:10px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:4px;font-weight:500}
+.diff-easy{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.diff-med{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.platform{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+
+/* ===================== TRACKER ===================== */
+.tracker-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.tracker-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.tracker-stats{display:flex;gap:18px;flex-wrap:wrap}
+.t-stat{text-align:center}
+.t-num{font-size:20px;font-weight:600;color:var(--text);line-height:1;display:block}
+.t-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.progress-bar-row{padding:12px 18px;border-bottom:1px solid var(--border)}
+.pb-label{font-size:12px;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+.pb-track{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;border:1px solid var(--border)}
+.pb-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s ease}
+.tracker-body{padding:16px 18px}
+.week-row{margin-bottom:16px}
+.week-row-label{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+.days-row{display:flex;gap:5px;flex-wrap:wrap}
+.t-day{
+  width:38px;height:38px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;position:relative;user-select:none;
+}
+.t-day:hover{border-color:var(--border-strong)}
+.t-day .dn{font-size:12px;font-weight:600;color:var(--text2);line-height:1}
+.t-day .dw{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;line-height:1;margin-top:2px}
+.t-day.done{background:var(--green-bg);border-color:var(--green-border)}
+.t-day.done .dn{color:var(--green)}
+.t-day.done .dw{color:var(--green);opacity:.7}
+.t-day.done::after{content:'✓';position:absolute;top:1px;right:3px;font-size:8px;color:var(--green);font-weight:700}
+.t-day.today{border-color:var(--accent);background:var(--accent-bg)}
+.t-day.today .dn{color:var(--accent)}
+.t-day.today .dw{color:var(--accent);opacity:.7}
+.t-day.today::before{content:'';position:absolute;top:3px;left:3px;width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.t-day.done.today{background:var(--green-bg);border-color:var(--green-border)}
+.tracker-legend{display:flex;gap:16px;padding:12px 18px;border-top:1px solid var(--border);flex-wrap:wrap;align-items:center}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+.legend-dot{width:14px;height:14px;border-radius:4px;border:1px solid;flex-shrink:0}
+.ld-done{background:var(--green-bg);border-color:var(--green-border)}
+.ld-today{background:var(--accent-bg);border-color:var(--accent)}
+.ld-empty{background:var(--surface2);border-color:var(--border)}
+.reset-btn{
+  margin-left:auto;font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);
+  background:none;border:1px solid var(--border);border-radius:5px;padding:4px 10px;
+  cursor:pointer;text-transform:uppercase;letter-spacing:.06em;transition:color .15s,border-color .15s;
+}
+.reset-btn:hover{color:var(--red);border-color:var(--red-border)}
+
+/* ===================== CONTACT DEVELOPER ===================== */
+.contact-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.contact-avatar{
+  width:50px;height:50px;border-radius:10px;background:var(--accent-bg);
+  border:1px solid var(--accent-border);display:flex;align-items:center;
+  justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;
+  letter-spacing:.04em;color:var(--accent);flex-shrink:0;
+}
+.contact-info{flex:1;min-width:160px}
+.contact-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:1px}
+.contact-role{font-size:12px;color:var(--muted);margin-bottom:3px}
+.contact-email{font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)}
+.contact-cta{
+  padding:9px 18px;background:var(--accent);border:none;border-radius:8px;
+  color:#fff;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;gap:7px;font-family:'DM Sans',sans-serif;
+  transition:opacity .15s;white-space:nowrap;
+}
+.contact-cta:hover{opacity:.85}
+
+/* ===================== FOOTER ===================== */
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);background:var(--surface)}
+.footer-name{font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px}
+.footer-sub{font-size:13px;color:var(--muted)}
+
+/* ===================== ACCOUNT PANEL ===================== */
+#panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:300;backdrop-filter:blur(2px)}
+#panel-overlay.open{display:block}
+#account-panel{
+  position:fixed;top:0;right:-340px;width:320px;height:100vh;
+  background:var(--surface);border-left:1px solid var(--border);
+  z-index:400;transition:right .28s cubic-bezier(.4,0,.2,1);overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+#account-panel.open{right:0}
+.ap-head{
+  padding:16px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface2);
+}
+.ap-title{font-size:14px;font-weight:600;color:var(--text)}
+.ap-close{
+  width:28px;height:28px;border:1px solid var(--border);border-radius:6px;
+  background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);font-size:18px;line-height:1;transition:background .15s;
+}
+.ap-close:hover{background:var(--border);color:var(--text)}
+.ap-profile{
+  padding:20px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;
+}
+.ap-avatar-wrap{position:relative;cursor:pointer;flex-shrink:0}
+.ap-avatar{
+  width:54px;height:54px;border-radius:10px;background:var(--accent-bg);
+  border:1.5px solid var(--accent-border);overflow:hidden;display:flex;
+  align-items:center;justify-content:center;font-size:22px;font-weight:700;
+  color:var(--accent);transition:border-color .15s;
+}
+.ap-avatar:hover{border-color:var(--accent)}
+.ap-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.ap-edit-badge{
+  position:absolute;bottom:-3px;right:-3px;width:18px;height:18px;
+  background:var(--accent);border-radius:4px;display:flex;align-items:center;
+  justify-content:center;font-size:10px;color:#fff;border:1.5px solid var(--surface);
+}
+.ap-user-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:2px}
+.ap-user-email{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;word-break:break-all}
+.ap-badge{
+  display:inline-block;font-size:10px;font-family:'DM Mono',monospace;
+  padding:2px 8px;border-radius:4px;margin-top:4px;font-weight:500;
+}
+.ap-badge.google{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-border)}
+.ap-badge.guest{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.ap-section{padding:14px 18px;border-bottom:1px solid var(--border)}
+.ap-section-title{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+.ap-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:13px;color:var(--text2)}
+.ap-row:not(:last-child){border-bottom:1px solid var(--border)}
+/* Toggle */
+.tog{position:relative;width:36px;height:20px;flex-shrink:0;cursor:pointer}
+.tog input{opacity:0;width:0;height:0;position:absolute}
+.tog-track{
+  position:absolute;inset:0;background:var(--border-strong);border-radius:20px;
+  cursor:pointer;transition:background .2s;
+}
+.tog input:checked+.tog-track{background:var(--accent)}
+.tog-track::after{
+  content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;
+  background:#fff;border-radius:50%;transition:left .2s;
+}
+.tog input:checked+.tog-track::after{left:19px}
+.ap-btn{
+  width:100%;padding:9px;border-radius:7px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text2);font-size:13px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;display:flex;align-items:center;
+  justify-content:center;gap:8px;margin-bottom:8px;
+  transition:background .15s,border-color .15s;
+}
+.ap-btn:last-child{margin-bottom:0}
+.ap-btn:hover{background:var(--border);color:var(--text)}
+.ap-btn.primary{background:var(--accent-bg);border-color:var(--accent-border);color:var(--accent)}
+.ap-btn.primary:hover{background:var(--accent);color:#fff}
+.ap-btn.danger{color:var(--red);border-color:var(--red-border)}
+.ap-btn.danger:hover{background:var(--red-bg)}
+
+/* ===================== TOAST ===================== */
+#toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(60px);
+  background:var(--text);color:var(--bg);padding:10px 18px;border-radius:8px;
+  font-size:13px;font-weight:500;z-index:9999;transition:transform .3s;
+  white-space:nowrap;box-shadow:var(--shadow-lg);pointer-events:none;
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ===================== MOBILE ===================== */
+@media(max-width:480px){
+  .t-day{width:34px;height:34px}
+  .t-day .dn{font-size:11px}
+  .t-day .dw{font-size:8px}
+  .days-row{gap:4px}
+  .tracker-stats{gap:12px}
+  #account-panel{width:290px}
+  .auth-card{padding:28px 22px}
 }
 
-/* NAV */
-.nav-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(247,246,243,0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 20px;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: none;
-}
-.nav-bar::-webkit-scrollbar { display: none; }
-.nav-inner { display: inline-flex; }
-.nav-link {
-  display: inline-block;
-  padding: 12px 14px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--muted);
-  text-decoration: none;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-family: 'DM Mono', monospace;
-  border-bottom: 2px solid transparent;
-  transition: color 0.15s, border-color 0.15s;
-}
-.nav-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
-.nav-link.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
-
-/* LAYOUT */
-.container { max-width: 820px; margin: 0 auto; padding: 0 20px; }
-.section { padding: 48px 0; border-bottom: 1px solid var(--border); }
-.section:last-child { border-bottom: none; }
-.section-header { margin-bottom: 28px; }
-.section-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-.section-title {
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.3;
-}
-
-/* DAILY STRUCTURE */
-.daily-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-}
-@media (max-width: 480px) { .daily-grid { grid-template-columns: 1fr; } }
-.daily-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 18px;
-  text-align: center;
-}
-.daily-card .hours {
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--accent);
-  line-height: 1;
-}
-.daily-card .label {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-/* DAY CARDS */
-.day-grid { display: flex; flex-direction: column; gap: 8px; }
-.day-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
-  display: grid;
-  grid-template-columns: 46px 1fr;
-  gap: 14px;
-  align-items: start;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.day-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-}
-.day-num {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  text-align: right;
-  padding-right: 12px;
-  border-right: 1px solid var(--border);
-  padding-top: 2px;
-  line-height: 1.5;
-}
-.day-num span { display: block; font-size: 15px; font-weight: 600; color: var(--text2); letter-spacing: 0; }
-.day-topic {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 3px;
-}
-.day-use {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 10px;
-  font-style: italic;
-  line-height: 1.5;
-}
-.day-meta { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip {
-  font-size: 11px;
-  padding: 3px 9px;
-  border-radius: 5px;
-  font-family: 'DM Mono', monospace;
-  text-decoration: none;
-  display: inline-block;
-  line-height: 1.5;
-}
-.chip-r { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-border); }
-.chip-e { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-.chip-p { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-.chip-proj { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-.chip-rev { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
-a.chip:hover { opacity: 0.8; }
-.tip-card {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 8px;
-  padding: 13px 16px;
-  margin-top: 12px;
-  font-size: 13px;
-  color: var(--text2);
-}
-.tip-card strong { color: var(--text); font-weight: 600; }
-
-/* DEEP GRID */
-.deep-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-@media (max-width: 480px) { .deep-grid { grid-template-columns: 1fr; } }
-.deep-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px;
-}
-.deep-topic {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 5px;
-}
-.deep-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
-
-/* REACT GRID */
-.react-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
-@media (max-width: 480px) { .react-grid { grid-template-columns: 1fr; } }
-.react-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px;
-}
-.react-card h4 {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  margin-bottom: 10px;
-  font-family: 'DM Mono', monospace;
-}
-.react-card ul { list-style: none; padding: 0; }
-.react-card li {
-  font-size: 13px;
-  color: var(--text2);
-  padding: 5px 0;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.react-card li:last-child { border-bottom: none; }
-.react-card li::before {
-  content: '';
-  width: 5px; height: 5px;
-  background: var(--border-strong);
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.react-card a { color: var(--accent); text-decoration: none; font-size: 13px; }
-.react-card a:hover { text-decoration: underline; }
-
-/* PROBLEM TABLE */
-.prob-section { margin-bottom: 28px; }
-.prob-section h3 {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
-}
-.prob-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
-.prob-table th {
-  text-align: left;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface2);
-}
-.prob-table td {
-  padding: 9px 12px;
-  font-size: 13px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text2);
-}
-.prob-table tr:last-child td { border-bottom: none; }
-.prob-table tr:hover td { background: var(--surface2); }
-.diff {
-  font-size: 10px;
-  font-family: 'DM Mono', monospace;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 500;
-}
-.diff-easy { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-.diff-med { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
-.diff-hard { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-.platform { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
-
-/* ===== TRACKER ===== */
-.tracker-wrap {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-}
-.tracker-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 16px 18px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface2);
-}
-.tracker-stats { display: flex; gap: 18px; flex-wrap: wrap; }
-.t-stat { text-align: center; }
-.t-stat .t-num {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1;
-  display: block;
-}
-.t-stat .t-lbl {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.progress-bar-row { padding: 12px 18px; border-bottom: 1px solid var(--border); }
-.pb-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
-.pb-track { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
-.pb-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.4s ease; }
-.tracker-body { padding: 16px 18px; }
-.week-row { margin-bottom: 16px; }
-.week-row-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.days-row { display: flex; gap: 5px; flex-wrap: wrap; }
-.t-day {
-  width: 38px;
-  height: 38px;
-  border-radius: 7px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s;
-  position: relative;
-  user-select: none;
-}
-.t-day:hover { border-color: var(--border-strong); }
-.t-day .dn {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text2);
-  line-height: 1;
-}
-.t-day .dw {
-  font-size: 9px;
-  color: var(--muted);
-  font-family: 'DM Mono', monospace;
-  text-transform: uppercase;
-  line-height: 1;
-  margin-top: 2px;
-}
-.t-day.done {
-  background: var(--green-bg);
-  border-color: var(--green-border);
-}
-.t-day.done .dn { color: var(--green); }
-.t-day.done .dw { color: var(--green); opacity: 0.7; }
-.t-day.done::after {
-  content: '✓';
-  position: absolute;
-  top: 1px;
-  right: 3px;
-  font-size: 8px;
-  color: var(--green);
-  font-weight: 700;
-}
-.t-day.today {
-  border-color: var(--accent);
-  background: var(--accent-bg);
-}
-.t-day.today .dn { color: var(--accent); }
-.t-day.today .dw { color: var(--accent); opacity: 0.7; }
-.t-day.today::before {
-  content: '';
-  position: absolute;
-  top: 3px; left: 3px;
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-.t-day.done.today { background: var(--green-bg); border-color: var(--green-border); }
-.tracker-legend {
-  display: flex;
-  gap: 16px;
-  padding: 12px 18px;
-  border-top: 1px solid var(--border);
-  flex-wrap: wrap;
-}
-.legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
-.legend-dot {
-  width: 14px; height: 14px;
-  border-radius: 4px;
-  border: 1px solid;
-  flex-shrink: 0;
-}
-.ld-done { background: var(--green-bg); border-color: var(--green-border); }
-.ld-today { background: var(--accent-bg); border-color: var(--accent); }
-.ld-empty { background: var(--surface2); border-color: var(--border); }
-.reset-btn {
-  margin-left: auto;
-  font-size: 11px;
-  font-family: 'DM Mono', monospace;
-  color: var(--muted);
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 4px 10px;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  transition: color 0.15s, border-color 0.15s;
-}
-.reset-btn:hover { color: var(--red); border-color: var(--red-border); }
-
-/* FOOTER */
-.footer {
-  text-align: center;
-  padding: 40px 24px;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-}
-.footer-name {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-.footer-sub { font-size: 13px; color: var(--muted); }
-
-@media (max-width: 480px) {
-  .t-day { width: 34px; height: 34px; }
-  .t-day .dn { font-size: 11px; }
-  .t-day .dw { font-size: 8px; }
-  .days-row { gap: 4px; }
-  .tracker-stats { gap: 12px; }
-}
+/* Hidden file input for avatar */
+#avatar-file-input{display:none}
 </style>
 </head>
 <body>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-eyebrow">2-Month Study Plan · Vanilla JS → React</div>
-  <h1>Javascript Learning<br><span>Full Roadmap</span><br>to React.</h1>
-  <div class="hero-name">Prepared for: Md. Rasel</div>
-  <div class="stats-row">
-    <div class="stat-pill"><strong>8</strong>Weeks</div>
-    <div class="stat-pill"><strong>56</strong>Days</div>
-    <div class="stat-pill"><strong>6h</strong>Per Day</div>
-    <div class="stat-pill"><strong>100+</strong>Problems</div>
-    <div class="stat-pill"><strong>4+</strong>Projects</div>
+<!-- ============ AUTH SCREEN ============ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand">JS <span>Roadmap</span> to React</div>
+    <div class="auth-eyebrow">2-Month Study Plan</div>
+    <div class="auth-title">Track your progress</div>
+    <div class="auth-sub">Sign in to save your study tracker across sessions. Your data stays private to your account.</div>
+    <div id="google-btn-wrap">
+      <button class="google-signin-btn" onclick="triggerGoogleSignIn()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+    </div>
+    <div class="auth-divider">or</div>
+    <button class="guest-btn" onclick="continueAsGuest()">Continue as Guest</button>
+    <div class="auth-footer">Guest progress is saved on this device only.</div>
+  </div>
+  <div class="auth-notice" id="setup-notice" style="display:none">
+    <strong>Developer Setup Required</strong>
+    Google Sign-In requires a Client ID. Replace <code>YOUR_GOOGLE_CLIENT_ID</code> in the script at the bottom of this file, then host on <a href="https://pages.github.com" target="_blank">GitHub Pages</a> or <a href="https://netlify.com" target="_blank">Netlify</a>.
   </div>
 </div>
 
-<!-- NAV -->
-<nav class="nav-bar">
-  <div class="nav-inner">
-    <a class="nav-link" href="#structure">Structure</a>
-    <a class="nav-link" href="#week1">Week 1</a>
-    <a class="nav-link" href="#week2">Week 2</a>
-    <a class="nav-link" href="#week3">Week 3</a>
-    <a class="nav-link" href="#week4">Week 4</a>
-    <a class="nav-link" href="#week56">Week 5–6</a>
-    <a class="nav-link" href="#week78">Week 7–8</a>
-    <a class="nav-link" href="#problems">Problems</a>
-    <a class="nav-link" href="#tracker">Tracker</a>
+<!-- ============ MAIN APP ============ -->
+<div id="app" style="display:none">
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div class="topbar-brand">JS <span>Roadmap</span> to React</div>
+    <div class="topbar-actions">
+      <!-- Dark mode toggle -->
+      <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle dark/light mode">
+        <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <!-- Avatar / account -->
+      <div class="avatar-btn" id="avatar-topbar-btn" onclick="openPanel()" title="Account">
+        <span id="avatar-initials">?</span>
+      </div>
+    </div>
   </div>
-</nav>
 
-<div class="container">
-
-  <!-- DAILY STRUCTURE -->
-  <section class="section" id="structure">
-    <div class="section-header">
-      <div class="section-tag">01 — Daily Routine</div>
-      <div class="section-title">Your Daily Structure</div>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">2-Month Study Plan &middot; Vanilla JS &rarr; React</div>
+    <h1>Javascript Learning<br><span>Full Roadmap</span><br>to React.</h1>
+    <div class="hero-user-line">Welcome, <strong id="hero-username">Guest</strong></div>
+    <div class="stats-row">
+      <div class="stat-pill"><strong>8</strong>Weeks</div>
+      <div class="stat-pill"><strong>56</strong>Days</div>
+      <div class="stat-pill"><strong>6h</strong>Per Day</div>
+      <div class="stat-pill"><strong>100+</strong>Problems</div>
+      <div class="stat-pill"><strong>4+</strong>Projects</div>
     </div>
-    <div class="daily-grid">
-      <div class="daily-card">
-        <div class="hours">2h</div>
-        <div class="label">Learning</div>
-      </div>
-      <div class="daily-card">
-        <div class="hours">3h</div>
-        <div class="label">Practice</div>
-      </div>
-      <div class="daily-card">
-        <div class="hours">1h</div>
-        <div class="label">Problems</div>
-      </div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav-bar">
+    <div class="nav-inner">
+      <a class="nav-link" href="#structure">Structure</a>
+      <a class="nav-link" href="#week1">Week 1</a>
+      <a class="nav-link" href="#week2">Week 2</a>
+      <a class="nav-link" href="#week3">Week 3</a>
+      <a class="nav-link" href="#week4">Week 4</a>
+      <a class="nav-link" href="#week56">Week 5–6</a>
+      <a class="nav-link" href="#week78">Week 7–8</a>
+      <a class="nav-link" href="#problems">Problems</a>
+      <a class="nav-link" href="#tracker">Tracker</a>
     </div>
-    <div class="tip-card"><strong>How to use this roadmap —</strong> Read the topic from the given resource first. Then code the exercise yourself from scratch — no copy-paste. Finally, solve the daily problem. Revise every Sunday. Consistency is everything.</div>
-  </section>
+  </nav>
 
-  <!-- WEEK 1 -->
-  <section class="section" id="week1">
-    <div class="section-header">
-      <div class="section-tag">02 — Week 1</div>
-      <div class="section-title">Core Fundamentals</div>
-    </div>
-    <div class="day-grid">
+  <div class="container">
 
-      <div class="day-card">
-        <div class="day-num">DAY<span>01</span></div>
-        <div>
-          <div class="day-topic">Variables &amp; Data Types</div>
-          <div class="day-use">How JavaScript stores and categorizes data — strings, numbers, booleans, null, undefined.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank">MDN Guide</a>
-            <a class="chip chip-r" href="https://javascript.info/variables" target="_blank">JavaScript.info</a>
-            <span class="chip chip-e">Declare 10 variables of different types</span>
-            <span class="chip chip-p">LeetCode: Two Sum (Easy)</span>
-            <span class="chip chip-p">Codeforces: Watermelon (800)</span>
-          </div>
-        </div>
+    <!-- DAILY STRUCTURE -->
+    <section class="section" id="structure">
+      <div class="section-header">
+        <div class="section-tag">01 — Daily Routine</div>
+        <div class="section-title">Your Daily Structure</div>
       </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>02</span></div>
-        <div>
-          <div class="day-topic">Operators &amp; Conditionals</div>
-          <div class="day-use">Make decisions in code — if/else, ternary, comparison and logical operators.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/operators" target="_blank">JS.info: Operators</a>
-            <a class="chip chip-r" href="https://javascript.info/ifelse" target="_blank">JS.info: Conditionals</a>
-            <span class="chip chip-e">Build a grading system (A/B/C/D/F)</span>
-            <span class="chip chip-p">LeetCode: Palindrome Number</span>
-            <span class="chip chip-p">Codeforces: Next Round</span>
-          </div>
-        </div>
+      <div class="daily-grid">
+        <div class="daily-card"><div class="hours">2h</div><div class="label">Learning</div></div>
+        <div class="daily-card"><div class="hours">3h</div><div class="label">Practice</div></div>
+        <div class="daily-card"><div class="hours">1h</div><div class="label">Problems</div></div>
       </div>
+      <div class="tip-card"><strong>How to use this roadmap —</strong> Read the topic from the given resource first. Then code the exercise yourself from scratch — no copy-paste. Finally, solve the daily problem. Revise every Sunday. Consistency is everything.</div>
+    </section>
 
-      <div class="day-card">
-        <div class="day-num">DAY<span>03</span></div>
-        <div>
-          <div class="day-topic">Loops</div>
-          <div class="day-use">Repeat code blocks — for, while, do-while, for...of. Used everywhere: iterating lists, processing data, building UIs.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/while-for" target="_blank">JS.info: Loops</a>
-            <span class="chip chip-e">Print number triangle patterns</span>
-            <span class="chip chip-p">LeetCode: FizzBuzz</span>
-            <span class="chip chip-p">Codeforces: Bit++ (1000)</span>
-          </div>
-        </div>
+    <!-- WEEK 1 -->
+    <section class="section" id="week1">
+      <div class="section-header">
+        <div class="section-tag">02 — Week 1</div>
+        <div class="section-title">Core Fundamentals</div>
       </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>04</span></div>
-        <div>
-          <div class="day-topic">Functions</div>
-          <div class="day-use">Reusable blocks of logic — declaration, expression, parameters, return values. The building block of every JS program.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/function-basics" target="_blank">JS.info: Functions</a>
-            <span class="chip chip-e">Build 5 calculator functions</span>
-            <span class="chip chip-p">LeetCode: Add Digits</span>
-            <span class="chip chip-p">Codeforces: Domino Piling</span>
-          </div>
-        </div>
+      <div class="day-grid">
+        <div class="day-card"><div class="day-num">DAY<span>01</span></div><div><div class="day-topic">Variables &amp; Data Types</div><div class="day-use">How JavaScript stores and categorizes data — strings, numbers, booleans, null, undefined.</div><div class="day-meta"><a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank">MDN Guide</a><a class="chip chip-r" href="https://javascript.info/variables" target="_blank">JavaScript.info</a><span class="chip chip-e">Declare 10 variables of different types</span><span class="chip chip-p">LeetCode: Two Sum (Easy)</span><span class="chip chip-p">Codeforces: Watermelon (800)</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>02</span></div><div><div class="day-topic">Operators &amp; Conditionals</div><div class="day-use">Make decisions in code — if/else, ternary, comparison and logical operators.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/operators" target="_blank">JS.info: Operators</a><a class="chip chip-r" href="https://javascript.info/ifelse" target="_blank">JS.info: Conditionals</a><span class="chip chip-e">Build a grading system (A/B/C/D/F)</span><span class="chip chip-p">LeetCode: Palindrome Number</span><span class="chip chip-p">Codeforces: Next Round</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>03</span></div><div><div class="day-topic">Loops</div><div class="day-use">Repeat code blocks — for, while, do-while, for...of. Used everywhere: iterating lists, processing data, building UIs.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/while-for" target="_blank">JS.info: Loops</a><span class="chip chip-e">Print number triangle patterns</span><span class="chip chip-p">LeetCode: FizzBuzz</span><span class="chip chip-p">Codeforces: Bit++ (1000)</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>04</span></div><div><div class="day-topic">Functions</div><div class="day-use">Reusable blocks of logic — declaration, expression, parameters, return values. The building block of every JS program.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/function-basics" target="_blank">JS.info: Functions</a><span class="chip chip-e">Build 5 calculator functions</span><span class="chip chip-p">LeetCode: Add Digits</span><span class="chip chip-p">Codeforces: Domino Piling</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>05</span></div><div><div class="day-topic">Arrays</div><div class="day-use">Ordered lists of data. Used to store collections — users, products, scores. Core to almost every real app.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/array" target="_blank">JS.info: Arrays</a><span class="chip chip-e">Reverse array without .reverse()</span><span class="chip chip-p">LeetCode: Contains Duplicate</span><span class="chip chip-p">LeetCode: Best Time to Buy Stock</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>06</span></div><div><div class="day-topic">Objects</div><div class="day-use">Key-value data structures — how real data is modeled. Users, products, configs. Everything in JS is an object at the core.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/object" target="_blank">JS.info: Objects</a><span class="chip chip-e">Create a user profile object with methods</span><span class="chip chip-p">LeetCode: Valid Anagram</span><span class="chip chip-p">LeetCode: Two Sum (object approach)</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>07</span></div><div><div class="day-topic">Revision + Problem Sprint</div><div class="day-use">Revise all topics from Day 1–6. Solve 10+ easy problems from memory.</div><div class="day-meta"><a class="chip chip-r" href="https://www.codewars.com/" target="_blank">Codewars 8–7 kyu</a><a class="chip chip-r" href="https://leetcode.com/problemset/?difficulty=EASY" target="_blank">LeetCode Easy</a><span class="chip chip-rev">Revision Day — No new topics</span></div></div></div>
       </div>
+    </section>
 
-      <div class="day-card">
-        <div class="day-num">DAY<span>05</span></div>
-        <div>
-          <div class="day-topic">Arrays</div>
-          <div class="day-use">Ordered lists of data. Used to store collections — users, products, scores. Core to almost every real app.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/array" target="_blank">JS.info: Arrays</a>
-            <span class="chip chip-e">Reverse array without .reverse()</span>
-            <span class="chip chip-p">LeetCode: Contains Duplicate</span>
-            <span class="chip chip-p">LeetCode: Best Time to Buy Stock</span>
-          </div>
-        </div>
+    <!-- WEEK 2 -->
+    <section class="section" id="week2">
+      <div class="section-header">
+        <div class="section-tag">03 — Week 2</div>
+        <div class="section-title">Modern JavaScript (ES6+)</div>
       </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>06</span></div>
-        <div>
-          <div class="day-topic">Objects</div>
-          <div class="day-use">Key-value data structures — how real data is modeled. Users, products, configs. Everything in JS is an object at the core.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/object" target="_blank">JS.info: Objects</a>
-            <span class="chip chip-e">Create a user profile object with methods</span>
-            <span class="chip chip-p">LeetCode: Valid Anagram</span>
-            <span class="chip chip-p">LeetCode: Two Sum (object approach)</span>
-          </div>
-        </div>
+      <div class="day-grid">
+        <div class="day-card"><div class="day-num">DAY<span>08</span></div><div><div class="day-topic">Arrow Functions</div><div class="day-use">Cleaner syntax for functions. Used in callbacks, array methods, and React components constantly.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/arrow-functions-basics" target="_blank">JS.info: Arrow Functions</a><span class="chip chip-e">Convert 5 normal functions to arrow functions</span><span class="chip chip-p">Codewars: Basic arrow katas</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>09</span></div><div><div class="day-topic">Array Methods: map, filter, reduce</div><div class="day-use">Transform and filter data without loops. Used in every React app to render lists, filter searches, calculate totals.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/array-methods" target="_blank">JS.info: Array Methods</a><a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank">MDN Array API</a><span class="chip chip-e">Filter even numbers, map to doubled values</span><span class="chip chip-p">LeetCode: Move Zeroes</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>10</span></div><div><div class="day-topic">Destructuring</div><div class="day-use">Extract values from arrays/objects cleanly. Core React syntax — props destructuring, useState, imports.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/destructuring-assignment" target="_blank">JS.info: Destructuring</a><span class="chip chip-e">Destructure a user object and array of scores</span><span class="chip chip-p">LeetCode: Assign Cookies</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>11</span></div><div><div class="day-topic">Spread &amp; Rest Operators</div><div class="day-use">Copy/merge arrays and objects. Used constantly in React state updates: spread old state + new value.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/rest-parameters-spread" target="_blank">JS.info: Spread &amp; Rest</a><span class="chip chip-e">Merge two user objects, clone array without mutating</span><span class="chip chip-p">Codewars: Merge objects kata</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>12</span></div><div><div class="day-topic">Template Literals</div><div class="day-use">Dynamic strings with embedded expressions. Used in HTML generation, API URLs, error messages.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/string" target="_blank">JS.info: Strings</a><span class="chip chip-e">Build a dynamic email template with variables</span><span class="chip chip-p">LeetCode: Defanging an IP Address</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>13</span></div><div><div class="day-topic">Closures (Intro)</div><div class="day-use">Functions that remember their outer scope. Used in event handlers, factories, and React hooks — useState is built on closures.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/closure" target="_blank">JS.info: Closures</a><a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures" target="_blank">MDN: Closures</a><span class="chip chip-e">Build a counter factory using closures</span><span class="chip chip-p">Codewars: Make a counter</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>14</span></div><div><div class="day-topic">Revision + Problem Sprint</div><div class="day-use">Revise ES6+ syntax. Write code using every new feature from memory. Solve 8+ problems.</div><div class="day-meta"><a class="chip chip-r" href="https://www.codewars.com/" target="_blank">Codewars 7 kyu</a><span class="chip chip-rev">Revision Day</span></div></div></div>
       </div>
+    </section>
 
-      <div class="day-card">
-        <div class="day-num">DAY<span>07</span></div>
-        <div>
-          <div class="day-topic">Revision + Problem Sprint</div>
-          <div class="day-use">Revise all topics from Day 1–6. Solve 10+ easy problems from memory.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://www.codewars.com/" target="_blank">Codewars 8–7 kyu</a>
-            <a class="chip chip-r" href="https://leetcode.com/problemset/?difficulty=EASY" target="_blank">LeetCode Easy</a>
-            <span class="chip chip-rev">Revision Day — No new topics</span>
-          </div>
-        </div>
+    <!-- WEEK 3 -->
+    <section class="section" id="week3">
+      <div class="section-header">
+        <div class="section-tag">04 — Week 3</div>
+        <div class="section-title">DOM &amp; Browser</div>
       </div>
-
-    </div>
-  </section>
-
-  <!-- WEEK 2 -->
-  <section class="section" id="week2">
-    <div class="section-header">
-      <div class="section-tag">03 — Week 2</div>
-      <div class="section-title">Modern JavaScript (ES6+)</div>
-    </div>
-    <div class="day-grid">
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>08</span></div>
-        <div>
-          <div class="day-topic">Arrow Functions</div>
-          <div class="day-use">Cleaner syntax for functions. Used in callbacks, array methods, and React components constantly.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/arrow-functions-basics" target="_blank">JS.info: Arrow Functions</a>
-            <span class="chip chip-e">Convert 5 normal functions to arrow functions</span>
-            <span class="chip chip-p">Codewars: Basic arrow katas</span>
-          </div>
-        </div>
+      <div class="day-grid">
+        <div class="day-card"><div class="day-num">DAY<span>15–16</span></div><div><div class="day-topic">DOM Basics &amp; Selecting Elements</div><div class="day-use">How JavaScript controls what's displayed — getElementById, querySelector, textContent, innerHTML, classList.</div><div class="day-meta"><a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction" target="_blank">MDN: DOM Intro</a><a class="chip chip-r" href="https://javascript.info/dom-nodes" target="_blank">JS.info: DOM Nodes</a><span class="chip chip-e">Change heading text and color with JS</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>17</span></div><div><div class="day-topic">Events &amp; Event Listeners</div><div class="day-use">Respond to user actions — clicks, input, keyboard, mouse. The core of all interactive web apps.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/introduction-browser-events" target="_blank">JS.info: Events</a><span class="chip chip-e">Button click counter + color toggle</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>18–19</span></div><div><div class="day-topic">Forms &amp; Validation</div><div class="day-use">Read user input, validate it, show errors. Core for login, signup, contact forms in any app.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/forms-controls" target="_blank">JS.info: Forms</a><a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation" target="_blank">MDN: Validation</a><span class="chip chip-e">Email + password form with live validation</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>20–21</span></div><div><div class="day-topic">Project: Todo App</div><div class="day-use">Combines DOM selection, events, form input, arrays, localStorage. Your first real project to show.</div><div class="day-meta"><span class="chip chip-proj">Add / delete / mark done</span><span class="chip chip-proj">Save to localStorage</span><span class="chip chip-proj">Filter: All / Active / Done</span></div></div></div>
       </div>
+    </section>
 
-      <div class="day-card">
-        <div class="day-num">DAY<span>09</span></div>
-        <div>
-          <div class="day-topic">Array Methods: map, filter, reduce</div>
-          <div class="day-use">Transform and filter data without loops. Used in every React app to render lists, filter searches, calculate totals.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/array-methods" target="_blank">JS.info: Array Methods</a>
-            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank">MDN Array API</a>
-            <span class="chip chip-e">Filter even numbers, map to doubled values</span>
-            <span class="chip chip-p">LeetCode: Move Zeroes</span>
-          </div>
-        </div>
+    <!-- WEEK 4 -->
+    <section class="section" id="week4">
+      <div class="section-header">
+        <div class="section-tag">05 — Week 4</div>
+        <div class="section-title">Async JavaScript</div>
       </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>10</span></div>
-        <div>
-          <div class="day-topic">Destructuring</div>
-          <div class="day-use">Extract values from arrays/objects cleanly. Core React syntax — props destructuring, useState, imports.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/destructuring-assignment" target="_blank">JS.info: Destructuring</a>
-            <span class="chip chip-e">Destructure a user object and array of scores</span>
-            <span class="chip chip-p">LeetCode: Assign Cookies</span>
-          </div>
-        </div>
+      <div class="day-grid">
+        <div class="day-card"><div class="day-num">DAY<span>22</span></div><div><div class="day-topic">Callbacks</div><div class="day-use">Passing functions as arguments to run later. Foundation of async JS — understand this before Promises.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/callbacks" target="_blank">JS.info: Callbacks</a><span class="chip chip-e">Simulate API call with setTimeout callback</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>23</span></div><div><div class="day-topic">Promises</div><div class="day-use">Handle async operations cleanly. Avoid callback hell. Used in every fetch call, database query, file read.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/promise-basics" target="_blank">JS.info: Promises</a><a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank">MDN: Promise</a><span class="chip chip-e">Create and chain 3 promises</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>24</span></div><div><div class="day-topic">Async / Await</div><div class="day-use">Cleaner syntax for Promises. Makes async code look synchronous. This is what you'll write in every real project.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/async-await" target="_blank">JS.info: Async/Await</a><span class="chip chip-e">Convert a Promise chain to async/await</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>25–26</span></div><div><div class="day-topic">Fetch API + Working with JSON</div><div class="day-use">Get data from the internet. How every web app loads data from a server — weather, users, products.</div><div class="day-meta"><a class="chip chip-r" href="https://javascript.info/fetch" target="_blank">JS.info: Fetch</a><a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" target="_blank">MDN: Fetch API</a><span class="chip chip-e">Fetch user list from JSONPlaceholder and display</span></div></div></div>
+        <div class="day-card"><div class="day-num">DAY<span>27–28</span></div><div><div class="day-topic">Project: Weather App</div><div class="day-use">Puts together fetch, async/await, DOM updates, and JSON parsing in one real app.</div><div class="day-meta"><span class="chip chip-proj">Search city &rarr; OpenWeatherMap API</span><span class="chip chip-proj">Show temp, condition, humidity</span><span class="chip chip-proj">Handle loading + error states</span></div></div></div>
       </div>
+    </section>
 
-      <div class="day-card">
-        <div class="day-num">DAY<span>11</span></div>
-        <div>
-          <div class="day-topic">Spread &amp; Rest Operators</div>
-          <div class="day-use">Copy/merge arrays and objects. Used constantly in React state updates: spread old state + new value.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/rest-parameters-spread" target="_blank">JS.info: Spread &amp; Rest</a>
-            <span class="chip chip-e">Merge two user objects, clone array without mutating</span>
-            <span class="chip chip-p">Codewars: Merge objects kata</span>
-          </div>
-        </div>
+    <!-- WEEK 5-6 -->
+    <section class="section" id="week56">
+      <div class="section-header">
+        <div class="section-tag">06 — Week 5–6</div>
+        <div class="section-title">Deep JavaScript</div>
       </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>12</span></div>
-        <div>
-          <div class="day-topic">Template Literals</div>
-          <div class="day-use">Dynamic strings with embedded expressions. Used in HTML generation, API URLs, error messages.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/string" target="_blank">JS.info: Strings</a>
-            <span class="chip chip-e">Build a dynamic email template with variables</span>
-            <span class="chip chip-p">LeetCode: Defanging an IP Address</span>
-          </div>
-        </div>
+      <div class="deep-grid">
+        <div class="deep-card"><div class="deep-topic">Closures (Deep Dive)</div><div class="deep-desc">Lexical scope, variable capture, module pattern. How React useState really works internally.</div><a class="chip chip-r" href="https://javascript.info/closure" target="_blank">JS.info: Closure</a></div>
+        <div class="deep-card"><div class="deep-topic">The Event Loop</div><div class="deep-desc">Call stack, task queue, microtask queue. Why setTimeout(fn, 0) runs after synchronous code.</div><a class="chip chip-r" href="https://javascript.info/event-loop" target="_blank">JS.info: Event Loop</a></div>
+        <div class="deep-card"><div class="deep-topic">The <code style="font-family:'DM Mono';font-size:13px;background:var(--surface2);padding:1px 5px;border-radius:3px">this</code> Keyword</div><div class="deep-desc">Context-dependent execution. How this behaves in methods, constructors, arrow functions, callbacks.</div><a class="chip chip-r" href="https://javascript.info/object-methods" target="_blank">JS.info: this</a></div>
+        <div class="deep-card"><div class="deep-topic">Prototypes &amp; Inheritance</div><div class="deep-desc">How JS objects inherit from each other — prototype chain, Object.create(), class syntax under the hood.</div><a class="chip chip-r" href="https://javascript.info/prototypes" target="_blank">JS.info: Prototypes</a></div>
+        <div class="deep-card"><div class="deep-topic">Error Handling</div><div class="deep-desc">try/catch/finally, custom errors, handling async errors. Essential for production-quality code.</div><a class="chip chip-r" href="https://javascript.info/error-handling" target="_blank">JS.info: Error Handling</a></div>
+        <div class="deep-card"><div class="deep-topic">ES Modules</div><div class="deep-desc">import/export, named vs default exports. How modern JS codebases are structured. Required for React.</div><a class="chip chip-r" href="https://javascript.info/modules-intro" target="_blank">JS.info: Modules</a></div>
       </div>
+      <div class="tip-card" style="margin-top:14px"><strong>Deep Dive Exercise —</strong> For each topic: write a code example from scratch, then write a 3-sentence plain-English explanation. Teaching is the deepest form of learning.</div>
+    </section>
 
-      <div class="day-card">
-        <div class="day-num">DAY<span>13</span></div>
-        <div>
-          <div class="day-topic">Closures (Intro)</div>
-          <div class="day-use">Functions that remember their outer scope. Used in event handlers, factories, and React hooks — useState is built on closures.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/closure" target="_blank">JS.info: Closures</a>
-            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures" target="_blank">MDN: Closures</a>
-            <span class="chip chip-e">Build a counter factory using closures</span>
-            <span class="chip chip-p">Codewars: Make a counter</span>
-          </div>
-        </div>
+    <!-- WEEK 7-8 -->
+    <section class="section" id="week78">
+      <div class="section-header">
+        <div class="section-tag">07 — Week 7–8</div>
+        <div class="section-title">React Fundamentals</div>
       </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>14</span></div>
-        <div>
-          <div class="day-topic">Revision + Problem Sprint</div>
-          <div class="day-use">Revise ES6+ syntax. Write code using every new feature from memory. Solve 8+ problems.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://www.codewars.com/" target="_blank">Codewars 7 kyu</a>
-            <span class="chip chip-rev">Revision Day</span>
-          </div>
-        </div>
+      <div class="react-grid">
+        <div class="react-card"><h4>Core Concepts</h4><ul><li>Components (function-based)</li><li>JSX syntax</li><li>Props — passing data down</li><li>State with useState</li><li>Re-rendering logic</li></ul></div>
+        <div class="react-card"><h4>Hooks</h4><ul><li>useState — local state</li><li>useEffect — side effects</li><li>useRef — DOM refs</li><li>useContext — shared state</li><li>Custom hooks</li></ul></div>
+        <div class="react-card"><h4>Resources</h4><ul><li><a href="https://react.dev/learn" target="_blank">React Official Docs (react.dev)</a></li><li><a href="https://javascript.info/" target="_blank">JS.info for JS concepts</a></li><li><a href="https://www.youtube.com/@TheNetNinja" target="_blank">The Net Ninja — YouTube</a></li><li><a href="https://scrimba.com/learn/learnreact" target="_blank">Scrimba: Learn React</a></li></ul></div>
+        <div class="react-card"><h4>Projects to Build</h4><ul><li>React Todo App (with hooks)</li><li>GitHub User Search (API + fetch)</li><li>Movie Browser (TMDB API)</li><li>Portfolio site (deploy on Vercel)</li></ul></div>
       </div>
+    </section>
 
-    </div>
-  </section>
-
-  <!-- WEEK 3 -->
-  <section class="section" id="week3">
-    <div class="section-header">
-      <div class="section-tag">04 — Week 3</div>
-      <div class="section-title">DOM &amp; Browser</div>
-    </div>
-    <div class="day-grid">
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>15–16</span></div>
-        <div>
-          <div class="day-topic">DOM Basics &amp; Selecting Elements</div>
-          <div class="day-use">How JavaScript controls what's displayed — getElementById, querySelector, textContent, innerHTML, classList.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction" target="_blank">MDN: DOM Intro</a>
-            <a class="chip chip-r" href="https://javascript.info/dom-nodes" target="_blank">JS.info: DOM Nodes</a>
-            <span class="chip chip-e">Change heading text and color with JS</span>
-          </div>
-        </div>
+    <!-- PROBLEMS -->
+    <section class="section" id="problems">
+      <div class="section-header">
+        <div class="section-tag">08 — Problem List</div>
+        <div class="section-title">100+ Curated Problems</div>
       </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>17</span></div>
-        <div>
-          <div class="day-topic">Events &amp; Event Listeners</div>
-          <div class="day-use">Respond to user actions — clicks, input, keyboard, mouse. The core of all interactive web apps.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/introduction-browser-events" target="_blank">JS.info: Events</a>
-            <span class="chip chip-e">Button click counter + color toggle</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>18–19</span></div>
-        <div>
-          <div class="day-topic">Forms &amp; Validation</div>
-          <div class="day-use">Read user input, validate it, show errors. Core for login, signup, contact forms in any app.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/forms-controls" target="_blank">JS.info: Forms</a>
-            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation" target="_blank">MDN: Validation</a>
-            <span class="chip chip-e">Email + password form with live validation</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>20–21</span></div>
-        <div>
-          <div class="day-topic">Project: Todo App</div>
-          <div class="day-use">Combines DOM selection, events, form input, arrays, localStorage. Your first real project to show.</div>
-          <div class="day-meta">
-            <span class="chip chip-proj">Add / delete / mark done</span>
-            <span class="chip chip-proj">Save to localStorage</span>
-            <span class="chip chip-proj">Filter: All / Active / Done</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- WEEK 4 -->
-  <section class="section" id="week4">
-    <div class="section-header">
-      <div class="section-tag">05 — Week 4</div>
-      <div class="section-title">Async JavaScript</div>
-    </div>
-    <div class="day-grid">
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>22</span></div>
-        <div>
-          <div class="day-topic">Callbacks</div>
-          <div class="day-use">Passing functions as arguments to run later. Foundation of async JS — understand this before Promises.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/callbacks" target="_blank">JS.info: Callbacks</a>
-            <span class="chip chip-e">Simulate API call with setTimeout callback</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>23</span></div>
-        <div>
-          <div class="day-topic">Promises</div>
-          <div class="day-use">Handle async operations cleanly. Avoid callback hell. Used in every fetch call, database query, file read.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/promise-basics" target="_blank">JS.info: Promises</a>
-            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank">MDN: Promise</a>
-            <span class="chip chip-e">Create and chain 3 promises</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>24</span></div>
-        <div>
-          <div class="day-topic">Async / Await</div>
-          <div class="day-use">Cleaner syntax for Promises. Makes async code look synchronous. This is what you'll write in every real project.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/async-await" target="_blank">JS.info: Async/Await</a>
-            <span class="chip chip-e">Convert a Promise chain to async/await</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>25–26</span></div>
-        <div>
-          <div class="day-topic">Fetch API + Working with JSON</div>
-          <div class="day-use">Get data from the internet. How every web app loads data from a server — weather, users, products.</div>
-          <div class="day-meta">
-            <a class="chip chip-r" href="https://javascript.info/fetch" target="_blank">JS.info: Fetch</a>
-            <a class="chip chip-r" href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" target="_blank">MDN: Fetch API</a>
-            <span class="chip chip-e">Fetch user list from JSONPlaceholder and display</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="day-card">
-        <div class="day-num">DAY<span>27–28</span></div>
-        <div>
-          <div class="day-topic">Project: Weather App</div>
-          <div class="day-use">Puts together fetch, async/await, DOM updates, and JSON parsing in one real app.</div>
-          <div class="day-meta">
-            <span class="chip chip-proj">Search city → OpenWeatherMap API</span>
-            <span class="chip chip-proj">Show temp, condition, humidity</span>
-            <span class="chip chip-proj">Handle loading + error states</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- WEEK 5-6 -->
-  <section class="section" id="week56">
-    <div class="section-header">
-      <div class="section-tag">06 — Week 5–6</div>
-      <div class="section-title">Deep JavaScript</div>
-    </div>
-    <div class="deep-grid">
-
-      <div class="deep-card">
-        <div class="day-topic">Closures (Deep Dive)</div>
-        <div class="deep-desc">Lexical scope, variable capture, module pattern. How React useState really works internally.</div>
-        <a class="chip chip-r" href="https://javascript.info/closure" target="_blank">JS.info: Closure</a>
-      </div>
-
-      <div class="deep-card">
-        <div class="day-topic">The Event Loop</div>
-        <div class="deep-desc">Call stack, task queue, microtask queue. Why setTimeout(fn, 0) runs after synchronous code.</div>
-        <a class="chip chip-r" href="https://javascript.info/event-loop" target="_blank">JS.info: Event Loop</a>
-      </div>
-
-      <div class="deep-card">
-        <div class="day-topic">The <code style="font-family:'DM Mono';font-size:13px;background:var(--surface2);padding:1px 5px;border-radius:3px;">this</code> Keyword</div>
-        <div class="deep-desc">Context-dependent execution. How this behaves in methods, constructors, arrow functions, and callbacks.</div>
-        <a class="chip chip-r" href="https://javascript.info/object-methods" target="_blank">JS.info: this</a>
-      </div>
-
-      <div class="deep-card">
-        <div class="day-topic">Prototypes &amp; Inheritance</div>
-        <div class="deep-desc">How JS objects inherit from each other — prototype chain, Object.create(), class syntax under the hood.</div>
-        <a class="chip chip-r" href="https://javascript.info/prototypes" target="_blank">JS.info: Prototypes</a>
-      </div>
-
-      <div class="deep-card">
-        <div class="day-topic">Error Handling</div>
-        <div class="deep-desc">try/catch/finally, custom errors, handling async errors. Essential for production-quality code.</div>
-        <a class="chip chip-r" href="https://javascript.info/error-handling" target="_blank">JS.info: Error Handling</a>
-      </div>
-
-      <div class="deep-card">
-        <div class="day-topic">ES Modules</div>
-        <div class="deep-desc">import/export, named vs default exports. How modern JS codebases are structured. Required for React.</div>
-        <a class="chip chip-r" href="https://javascript.info/modules-intro" target="_blank">JS.info: Modules</a>
-      </div>
-
-    </div>
-    <div class="tip-card" style="margin-top:14px;"><strong>Deep Dive Exercise —</strong> For each topic: write a code example from scratch that demonstrates the concept, then write a 3-sentence plain-English explanation of what it does. Teaching is the deepest form of learning.</div>
-  </section>
-
-  <!-- WEEK 7-8 -->
-  <section class="section" id="week78">
-    <div class="section-header">
-      <div class="section-tag">07 — Week 7–8</div>
-      <div class="section-title">React Fundamentals</div>
-    </div>
-    <div class="react-grid">
-      <div class="react-card">
-        <h4>Core Concepts</h4>
-        <ul>
-          <li>Components (function-based)</li>
-          <li>JSX syntax</li>
-          <li>Props — passing data down</li>
-          <li>State with useState</li>
-          <li>Re-rendering logic</li>
-        </ul>
-      </div>
-      <div class="react-card">
-        <h4>Hooks</h4>
-        <ul>
-          <li>useState — local state</li>
-          <li>useEffect — side effects</li>
-          <li>useRef — DOM refs</li>
-          <li>useContext — shared state</li>
-          <li>Custom hooks</li>
-        </ul>
-      </div>
-      <div class="react-card">
-        <h4>Resources</h4>
-        <ul>
-          <li><a href="https://react.dev/learn" target="_blank">React Official Docs (react.dev)</a></li>
-          <li><a href="https://javascript.info/" target="_blank">JS.info for JS concepts</a></li>
-          <li><a href="https://www.youtube.com/@TheNetNinja" target="_blank">The Net Ninja — YouTube</a></li>
-          <li><a href="https://scrimba.com/learn/learnreact" target="_blank">Scrimba: Learn React</a></li>
-        </ul>
-      </div>
-      <div class="react-card">
-        <h4>Projects to Build</h4>
-        <ul>
-          <li>React Todo App (with hooks)</li>
-          <li>GitHub User Search (API + fetch)</li>
-          <li>Movie Browser (TMDB API)</li>
-          <li>Portfolio site (deploy on Vercel)</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROBLEMS -->
-  <section class="section" id="problems">
-    <div class="section-header">
-      <div class="section-tag">08 — Problem List</div>
-      <div class="section-title">100+ Curated Problems</div>
-    </div>
-
-    <div class="prob-section">
-      <h3>Week 1–2 · Arrays &amp; Strings</h3>
-      <table class="prob-table">
-        <thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead>
-        <tbody>
+      <div class="prob-section">
+        <h3>Week 1–2 · Arrays &amp; Strings</h3>
+        <table class="prob-table"><thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead><tbody>
           <tr><td>Two Sum</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
           <tr><td>Palindrome Number</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
           <tr><td>FizzBuzz</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
@@ -1050,15 +630,11 @@ a.chip:hover { opacity: 0.8; }
           <tr><td>Bit++</td><td class="platform">Codeforces</td><td><span class="diff diff-easy">1000</span></td></tr>
           <tr><td>Domino Piling</td><td class="platform">Codeforces</td><td><span class="diff diff-easy">1000</span></td></tr>
           <tr><td>Reverse Integer</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="prob-section">
-      <h3>Week 3–4 · Logic &amp; Functions</h3>
-      <table class="prob-table">
-        <thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead>
-        <tbody>
+        </tbody></table>
+      </div>
+      <div class="prob-section">
+        <h3>Week 3–4 · Logic &amp; Functions</h3>
+        <table class="prob-table"><thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead><tbody>
           <tr><td>Climbing Stairs</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
           <tr><td>Fibonacci Number</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
           <tr><td>Power of Two</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
@@ -1069,15 +645,11 @@ a.chip:hover { opacity: 0.8; }
           <tr><td>3Sum</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
           <tr><td>Product Except Self</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
           <tr><td>Lucky Numbers</td><td class="platform">Codeforces</td><td><span class="diff diff-easy">1100</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="prob-section">
-      <h3>Week 5–6 · Intermediate Logic</h3>
-      <table class="prob-table">
-        <thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead>
-        <tbody>
+        </tbody></table>
+      </div>
+      <div class="prob-section">
+        <h3>Week 5–6 · Intermediate Logic</h3>
+        <table class="prob-table"><thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead><tbody>
           <tr><td>Valid Parentheses</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
           <tr><td>Binary Search</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
           <tr><td>Search Insert Position</td><td class="platform">LeetCode</td><td><span class="diff diff-easy">Easy</span></td></tr>
@@ -1088,15 +660,11 @@ a.chip:hover { opacity: 0.8; }
           <tr><td>Longest Consecutive Sequence</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
           <tr><td>Find Min in Rotated Array</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
           <tr><td>Sort Colors</td><td class="platform">LeetCode</td><td><span class="diff diff-med">Medium</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="prob-section">
-      <h3>Week 7–8 · React-Friendly JS (LeetCode JS30)</h3>
-      <table class="prob-table">
-        <thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead>
-        <tbody>
+        </tbody></table>
+      </div>
+      <div class="prob-section">
+        <h3>Week 7–8 · React-Friendly JS (LeetCode JS30)</h3>
+        <table class="prob-table"><thead><tr><th>Problem</th><th>Platform</th><th>Difficulty</th></tr></thead><tbody>
           <tr><td>Array Prototype Last</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-easy">Easy</span></td></tr>
           <tr><td>Counter II</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-easy">Easy</span></td></tr>
           <tr><td>Filter Elements by Type</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-easy">Easy</span></td></tr>
@@ -1105,266 +673,623 @@ a.chip:hover { opacity: 0.8; }
           <tr><td>Memoize</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-med">Medium</span></td></tr>
           <tr><td>Curry</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-med">Medium</span></td></tr>
           <tr><td>Promise All</td><td class="platform">LeetCode JS30</td><td><span class="diff diff-med">Medium</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-  </section>
-
-  <!-- TRACKER -->
-  <section class="section" id="tracker">
-    <div class="section-header">
-      <div class="section-tag">09 — Progress</div>
-      <div class="section-title">56-Day Study Tracker</div>
-    </div>
-
-    <div class="tracker-wrap">
-
-      <div class="tracker-header">
-        <div class="tracker-stats">
-          <div class="t-stat">
-            <span class="t-num" id="stat-done">0</span>
-            <span class="t-lbl">Done</span>
-          </div>
-          <div class="t-stat">
-            <span class="t-num" id="stat-left">56</span>
-            <span class="t-lbl">Remaining</span>
-          </div>
-          <div class="t-stat">
-            <span class="t-num" id="stat-streak">0</span>
-            <span class="t-lbl">Streak</span>
-          </div>
-          <div class="t-stat">
-            <span class="t-num" id="stat-pct">0%</span>
-            <span class="t-lbl">Complete</span>
-          </div>
-          <div class="t-stat">
-            <span class="t-num" id="stat-end" style="font-size:13px;">—</span>
-            <span class="t-lbl">End Date</span>
-          </div>
-        </div>
-        <button class="reset-btn" id="reset-btn">Reset</button>
+        </tbody></table>
       </div>
+    </section>
 
-      <div class="progress-bar-row">
-        <div class="pb-label">
-          <span id="pb-label-left">0 of 56 days completed</span>
-          <span id="pb-label-right">0%</span>
+    <!-- TRACKER -->
+    <section class="section" id="tracker">
+      <div class="section-header">
+        <div class="section-tag">09 — Progress</div>
+        <div class="section-title">56-Day Study Tracker</div>
+      </div>
+      <div class="tracker-wrap">
+        <div class="tracker-header">
+          <div class="tracker-stats">
+            <div class="t-stat"><span class="t-num" id="stat-done">0</span><span class="t-lbl">Done</span></div>
+            <div class="t-stat"><span class="t-num" id="stat-left">56</span><span class="t-lbl">Remaining</span></div>
+            <div class="t-stat"><span class="t-num" id="stat-streak">0</span><span class="t-lbl">Streak</span></div>
+            <div class="t-stat"><span class="t-num" id="stat-pct">0%</span><span class="t-lbl">Complete</span></div>
+            <div class="t-stat"><span class="t-num" id="stat-end" style="font-size:13px">—</span><span class="t-lbl">End Date</span></div>
+          </div>
+          <button class="reset-btn" id="reset-btn">Reset</button>
         </div>
-        <div class="pb-track">
-          <div class="pb-fill" id="pb-fill" style="width:0%"></div>
+        <div class="progress-bar-row">
+          <div class="pb-label"><span id="pb-label-left">0 of 56 days completed</span><span id="pb-label-right">0%</span></div>
+          <div class="pb-track"><div class="pb-fill" id="pb-fill" style="width:0%"></div></div>
+        </div>
+        <div class="tracker-body" id="tracker-body"></div>
+        <div class="tracker-legend">
+          <div class="legend-item"><div class="legend-dot ld-done"></div>Completed</div>
+          <div class="legend-item"><div class="legend-dot ld-today"></div>Today</div>
+          <div class="legend-item"><div class="legend-dot ld-empty"></div>Not done</div>
+          <span id="start-label" style="margin-left:auto;font-size:12px;color:var(--muted)"></span>
         </div>
       </div>
+    </section>
 
-      <div class="tracker-body" id="tracker-body"></div>
-
-      <div class="tracker-legend">
-        <div class="legend-item"><div class="legend-dot ld-done"></div>Completed</div>
-        <div class="legend-item"><div class="legend-dot ld-today"></div>Today</div>
-        <div class="legend-item"><div class="legend-dot ld-empty"></div>Not done</div>
-        <div class="legend-item" style="margin-left:auto; color:var(--muted); font-size:12px;" id="start-label"></div>
+    <!-- CONTACT DEVELOPER -->
+    <section class="section" id="contact">
+      <div class="section-header">
+        <div class="section-tag">10 — Contact</div>
+        <div class="section-title">Contact Developer</div>
       </div>
+      <div class="contact-card">
+        <div class="contact-avatar">MR</div>
+        <div class="contact-info">
+          <div class="contact-name">Md Rasel</div>
+          <div class="contact-role">Developer &amp; Creator of this Roadmap</div>
+          <div class="contact-email">raselofficial89@gmail.com</div>
+        </div>
+        <a class="contact-cta" href="mailto:raselofficial89@gmail.com?subject=JS Roadmap Feedback">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Send Email
+        </a>
+      </div>
+    </section>
 
+  </div><!-- end .container -->
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-name">Md. Rasel</div>
+    <div class="footer-sub">Consistency beats intensity. Show up every day.</div>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- ============ ACCOUNT PANEL ============ -->
+<div id="panel-overlay" onclick="closePanel()"></div>
+<div id="account-panel">
+  <div class="ap-head">
+    <span class="ap-title">My Account</span>
+    <button class="ap-close" onclick="closePanel()">&#x2715;</button>
+  </div>
+  <div class="ap-profile">
+    <div class="ap-avatar-wrap" onclick="document.getElementById('avatar-file-input').click()" title="Change photo">
+      <div class="ap-avatar" id="ap-avatar-display"><span id="ap-avatar-initials">?</span></div>
+      <div class="ap-edit-badge">&#9998;</div>
     </div>
+    <div>
+      <div class="ap-user-name" id="ap-user-name">—</div>
+      <div class="ap-user-email" id="ap-user-email">—</div>
+      <span class="ap-badge" id="ap-badge">Guest</span>
+    </div>
+  </div>
+  <input type="file" id="avatar-file-input" accept="image/*" onchange="handleAvatarUpload(event)">
 
-  </section>
+  <div class="ap-section">
+    <div class="ap-section-title">Preferences</div>
+    <div class="ap-row">
+      <span>Dark Mode</span>
+      <label class="tog"><input type="checkbox" id="tog-dark" onchange="onDarkModeToggle(this.checked)"><span class="tog-track"></span></label>
+    </div>
+    <div class="ap-row">
+      <span>Save session on this device</span>
+      <label class="tog"><input type="checkbox" id="tog-save" checked onchange="onSaveSessionToggle(this.checked)"><span class="tog-track"></span></label>
+    </div>
+    <div class="ap-row" id="row-notify">
+      <span>Daily study reminder (9 AM)</span>
+      <label class="tog"><input type="checkbox" id="tog-notify" onchange="onNotifyToggle(this.checked)"><span class="tog-track"></span></label>
+    </div>
+  </div>
 
+  <div class="ap-section">
+    <div class="ap-section-title">Progress</div>
+    <button class="ap-btn primary" onclick="emailProgress()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Email my progress
+    </button>
+    <button class="ap-btn" onclick="copyProgress()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy progress report
+    </button>
+  </div>
+
+  <div class="ap-section" style="margin-top:auto">
+    <button class="ap-btn danger" onclick="signOut()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign out
+    </button>
+  </div>
 </div>
 
-<!-- FOOTER -->
-<div class="footer">
-  <div class="footer-name">Md. Rasel</div>
-  <div class="footer-sub">Consistency beats intensity. Show up every day.</div>
-</div>
+<!-- ============ TOAST ============ -->
+<div id="toast"></div>
 
+<!-- ===================================================================
+     JAVASCRIPT
+     =================================================================== -->
 <script>
 (function() {
-  var STORAGE_KEY = 'rasel_roadmap_v2';
-  var WDAYS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
-  function load() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
-    catch(e) { return {}; }
+/* ── CONFIG ── replace with your real Google Client ID ── */
+var GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
+
+/* ── STATE ── */
+var currentUser = null;
+var IS_FILE     = window.location.protocol === 'file:';
+var HAS_CID     = GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID';
+var USE_GOOGLE  = HAS_CID && !IS_FILE;
+var WDAYS       = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+var toastTimer  = null;
+var notifyTimer = null;
+
+/* ─────────────────────────────── DATE HELPERS ─────────────────────── */
+function pad(n){ return n<10?'0'+n:''+n; }
+function localDateStr(d){
+  d = d||new Date();
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+function todayStr(){ return localDateStr(); }
+function parseDate(s){ var p=s.split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+
+/* ─────────────────────────────── STORAGE ──────────────────────────── */
+function ls(k,v){
+  try{ if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v); }catch(e){}
+}
+function lsDel(k){ try{localStorage.removeItem(k);}catch(e){} }
+
+function saveSession(u){
+  ls('rm_session', JSON.stringify({...u, savedAt:Date.now()}));
+}
+function loadSession(){
+  try{
+    var s=JSON.parse(ls('rm_session')||'null');
+    if(!s) return null;
+    if(Date.now()-s.savedAt > 30*864e5){ lsDel('rm_session'); return null; }
+    return s;
+  }catch(e){ return null; }
+}
+
+function getUserData(uid){
+  try{ return JSON.parse(ls('rm_data_'+uid)||'{"done":{},"startDate":null}'); }
+  catch(e){ return {done:{},startDate:null}; }
+}
+function saveUserData(uid,data){ ls('rm_data_'+uid, JSON.stringify(data)); }
+
+function getUserPrefs(uid){
+  try{ return JSON.parse(ls('rm_prefs_'+uid)||'{"theme":"light","saveSession":true,"notify":false}'); }
+  catch(e){ return {theme:'light',saveSession:true,notify:false}; }
+}
+function saveUserPrefs(uid,prefs){ ls('rm_prefs_'+uid, JSON.stringify(prefs)); }
+
+function getAvatar(uid){ return ls('rm_avatar_'+uid)||null; }
+function saveAvatar(uid,b64){ ls('rm_avatar_'+uid,b64); }
+
+/* ─────────────────────────────── TOAST ────────────────────────────── */
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.classList.remove('show'); },2800);
+}
+
+/* ─────────────────────────────── THEME ────────────────────────────── */
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme',theme);
+  document.getElementById('meta-theme-color').content = theme==='dark'?'#0d0f14':'#f7f6f3';
+  var sun=document.getElementById('theme-icon-sun');
+  var moon=document.getElementById('theme-icon-moon');
+  if(sun&&moon){
+    sun.style.display  = theme==='dark' ?'block':'none';
+    moon.style.display = theme==='dark' ?'none' :'block';
   }
-  function save(d) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e) {}
-  }
+  var tog=document.getElementById('tog-dark');
+  if(tog) tog.checked = theme==='dark';
+}
+window.toggleTheme = function(){
+  var prefs=getUserPrefs(currentUser?currentUser.userId:'__guest');
+  prefs.theme = prefs.theme==='dark'?'light':'dark';
+  applyTheme(prefs.theme);
+  if(currentUser) saveUserPrefs(currentUser.userId,prefs);
+};
+window.onDarkModeToggle = function(checked){
+  var prefs=getUserPrefs(currentUser?currentUser.userId:'__guest');
+  prefs.theme=checked?'dark':'light';
+  applyTheme(prefs.theme);
+  if(currentUser) saveUserPrefs(currentUser.userId,prefs);
+};
 
-  // BUGFIX: use LOCAL date, not UTC (toISOString() is UTC and can be wrong day in UTC+6)
-  function localDateStr(dateObj) {
-    var d = dateObj || new Date();
-    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
-  }
-  function pad(n) { return n < 10 ? '0'+n : ''+n; }
-  function todayStr() { return localDateStr(new Date()); }
-
-  function parseLocalDate(str) {
-    var p = str.split('-');
-    return new Date(+p[0], +p[1]-1, +p[2]);
-  }
-
-  var data = load();
-
-  if (!data.startDate) {
-    data.startDate = todayStr(); // local date, not UTC
-    data.done = {};
-    save(data);
-  }
-  if (!data.done) { data.done = {}; }
-
-  function dayIndexForDate(dateStr) {
-    var start = parseLocalDate(data.startDate);
-    var target = parseLocalDate(dateStr);
-    var diff = Math.round((target - start) / 86400000);
-    return diff + 1;
-  }
-
-  function dateForDayIndex(idx) {
-    var start = parseLocalDate(data.startDate);
-    var d = new Date(start.getTime() + (idx-1)*86400000);
-    return localDateStr(d);
-  }
-
-  function calcStreak() {
-    var today = dayIndexForDate(todayStr());
-    // Guard: if today is before the roadmap started, streak = 0
-    if (today < 1) return 0;
-    var upTo = Math.min(today, 56);
-    var streak = 0;
-    for (var i = upTo; i >= 1; i--) {
-      if (data.done[i]) streak++;
-      else break;
+/* ─────────────────────────────── AUTH ─────────────────────────────── */
+function showAuthScreen(){
+  document.getElementById('auth-screen').classList.add('active');
+  document.getElementById('app').style.display='none';
+  if(!USE_GOOGLE){
+    var btn=document.getElementById('google-btn-wrap');
+    if(btn) btn.style.display='none';
+    if(!HAS_CID && !IS_FILE){
+      var n=document.getElementById('setup-notice');
+      if(n) n.style.display='block';
     }
-    return streak;
   }
+}
 
-  function calcEndDate() {
-    // Projected end = startDate + 55 days
-    var start = parseLocalDate(data.startDate);
-    var end = new Date(start.getTime() + 55*86400000);
-    return end.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
-  }
+function loginUser(u){
+  currentUser=u;
+  document.getElementById('auth-screen').classList.remove('active');
+  document.getElementById('app').style.display='block';
 
-  function updateStats() {
-    var doneCount = Object.keys(data.done).filter(function(k){ return data.done[k]; }).length;
-    var pct = Math.round(doneCount/56*100);
-    document.getElementById('stat-done').textContent = doneCount;
-    document.getElementById('stat-left').textContent = 56 - doneCount;
-    document.getElementById('stat-streak').textContent = calcStreak();
-    document.getElementById('stat-pct').textContent = pct + '%';
-    document.getElementById('stat-end').textContent = calcEndDate();
-    document.getElementById('pb-fill').style.width = pct + '%';
-    document.getElementById('pb-label-left').textContent = doneCount + ' of 56 days completed';
-    document.getElementById('pb-label-right').textContent = pct + '%';
-    var sl = document.getElementById('start-label');
-    if (sl) {
-      var sd = parseLocalDate(data.startDate);
-      sl.textContent = 'Started: ' + sd.toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
-    }
-  }
+  /* Apply saved prefs */
+  var prefs=getUserPrefs(u.userId);
+  applyTheme(prefs.theme);
 
-  function buildTracker() {
-    var body = document.getElementById('tracker-body');
-    body.innerHTML = '';
-    var today = dayIndexForDate(todayStr());
+  /* Update UI */
+  updateUserUI(u);
 
-    for (var w = 0; w < 8; w++) {
-      var weekDiv = document.createElement('div');
-      weekDiv.className = 'week-row';
-      var label = document.createElement('div');
-      label.className = 'week-row-label';
-      label.textContent = 'Week ' + (w+1);
-      weekDiv.appendChild(label);
-
-      var row = document.createElement('div');
-      row.className = 'days-row';
-
-      for (var d = 1; d <= 7; d++) {
-        var dayNum = w*7 + d;
-        var tile = document.createElement('div');
-        tile.className = 't-day';
-
-        if (data.done[dayNum]) tile.classList.add('done');
-        if (dayNum === today) tile.classList.add('today');
-
-        var dn = document.createElement('div');
-        dn.className = 'dn';
-        dn.textContent = dayNum;
-
-        var dateStr = dateForDayIndex(dayNum);
-        var dateObj = parseLocalDate(dateStr);
-        var dw = document.createElement('div');
-        dw.className = 'dw';
-        dw.textContent = WDAYS[dateObj.getDay()];
-
-        tile.appendChild(dn);
-        tile.appendChild(dw);
-        tile.title = 'Day ' + dayNum + ' — ' + dateObj.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
-
-        (function(num, el) {
-          el.addEventListener('click', function() {
-            if (data.done[num]) {
-              delete data.done[num];
-              el.classList.remove('done');
-            } else {
-              data.done[num] = true;
-              el.classList.add('done');
-            }
-            save(data);
-            updateStats();
-          });
-        })(dayNum, tile);
-
-        row.appendChild(tile);
-      }
-      weekDiv.appendChild(row);
-      body.appendChild(weekDiv);
-    }
-    updateStats();
-  }
-
-  document.getElementById('reset-btn').addEventListener('click', function() {
-    if (confirm('Reset all progress? This cannot be undone.')) {
-      data.done = {};
-      data.startDate = todayStr();
-      save(data);
-      buildTracker();
-    }
-  });
-
+  /* Init tracker */
   buildTracker();
 
-  // ── SCROLL-SPY: active nav highlight via IntersectionObserver ──
-  var sections = document.querySelectorAll('.section[id]');
-  var navLinks = document.querySelectorAll('.nav-link');
+  /* Init scroll-spy */
+  initScrollSpy();
 
-  function setActive(id) {
-    navLinks.forEach(function(link) {
-      var href = link.getAttribute('href');
-      if (href === '#' + id) {
-        link.classList.add('active');
-        // scroll nav link into view on mobile
-        link.scrollIntoView && link.scrollIntoView({inline:'nearest', block:'nearest'});
+  /* Save session if allowed */
+  if(prefs.saveSession) saveSession(u);
+
+  /* Notification reminder */
+  if(prefs.notify) scheduleNotify();
+}
+
+function updateUserUI(u){
+  /* Hero */
+  var hn=document.getElementById('hero-username');
+  if(hn) hn.textContent = u.name||'Guest';
+
+  /* Topbar avatar */
+  renderAvatar(u);
+
+  /* Panel */
+  var pn=document.getElementById('ap-user-name');
+  var pe=document.getElementById('ap-user-email');
+  var pb=document.getElementById('ap-badge');
+  if(pn) pn.textContent = u.name||'Guest';
+  if(pe) pe.textContent = u.email||'Local account';
+  if(pb){
+    pb.textContent = u.isGuest?'Guest':'Google Account';
+    pb.className = 'ap-badge '+(u.isGuest?'guest':'google');
+  }
+  /* Panel prefs */
+  var prefs=getUserPrefs(u.userId);
+  var ts=document.getElementById('tog-save');
+  var tn=document.getElementById('tog-notify');
+  if(ts) ts.checked=!!prefs.saveSession;
+  if(tn) tn.checked=!!prefs.notify;
+}
+
+function renderAvatar(u){
+  var localAv=getAvatar(u.userId);
+  var btn=document.getElementById('avatar-topbar-btn');
+  var apAv=document.getElementById('ap-avatar-display');
+  var apIn=document.getElementById('ap-avatar-initials');
+  var topIn=document.getElementById('avatar-initials');
+
+  if(localAv){
+    if(btn) btn.innerHTML='<img src="'+localAv+'" alt="avatar">';
+    if(apAv) apAv.innerHTML='<img src="'+localAv+'" alt="avatar">';
+  } else if(u.picture && !u.isGuest){
+    if(btn) btn.innerHTML='<img src="'+u.picture+'" alt="avatar">';
+    if(apAv) apAv.innerHTML='<img src="'+u.picture+'" alt="avatar">';
+  } else {
+    var init=(u.name||'G').charAt(0).toUpperCase();
+    if(btn){ btn.innerHTML='<span id="avatar-initials">'+init+'</span>'; }
+    if(apAv) apAv.innerHTML='<span id="ap-avatar-initials">'+init+'</span>';
+  }
+}
+
+/* Google callback */
+window.handleGoogleCredential = function(response){
+  try{
+    var parts=response.credential.split('.');
+    var payload=JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+    var u={
+      userId:'g_'+payload.sub,
+      name:payload.name,
+      email:payload.email,
+      picture:payload.picture,
+      isGuest:false
+    };
+    loginUser(u);
+  }catch(e){ showToast('Sign-in failed. Please try again.'); }
+};
+
+window.triggerGoogleSignIn = function(){
+  if(typeof google==='undefined'||!google.accounts){
+    showToast('Google auth not available. Use Guest mode.');
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id:GOOGLE_CLIENT_ID,
+    callback:handleGoogleCredential,
+    auto_select:false
+  });
+  google.accounts.id.prompt(function(n){
+    if(n.isNotDisplayed()||n.isSkippedMoment()){
+      // One Tap blocked, use renderButton fallback
+      var c=document.createElement('div');
+      document.body.appendChild(c);
+      google.accounts.id.renderButton(c,{theme:'outline',size:'large',width:280,text:'continue_with'});
+      c.querySelector('div[role=button]')&&c.querySelector('div[role=button]').click();
+    }
+  });
+};
+
+window.continueAsGuest = function(){
+  var gid=ls('rm_guest_id');
+  if(!gid){ gid='guest_'+Math.random().toString(36).substr(2,9); ls('rm_guest_id',gid); }
+  loginUser({ userId:gid, name:'Guest', email:null, picture:null, isGuest:true });
+};
+
+window.signOut = function(){
+  if(!confirm('Sign out? Your progress stays saved on this device.')) return;
+  lsDel('rm_session');
+  currentUser=null;
+  closePanel();
+  showAuthScreen();
+};
+
+/* ─────────────────────────────── ACCOUNT PANEL ────────────────────── */
+window.openPanel = function(){
+  document.getElementById('account-panel').classList.add('open');
+  document.getElementById('panel-overlay').classList.add('open');
+};
+window.closePanel = function(){
+  document.getElementById('account-panel').classList.remove('open');
+  document.getElementById('panel-overlay').classList.remove('open');
+};
+
+window.handleAvatarUpload = function(e){
+  var f=e.target.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    saveAvatar(currentUser.userId, ev.target.result);
+    renderAvatar(currentUser);
+    showToast('Profile photo updated');
+  };
+  r.readAsDataURL(f);
+};
+
+window.onSaveSessionToggle = function(checked){
+  var prefs=getUserPrefs(currentUser.userId);
+  prefs.saveSession=checked;
+  saveUserPrefs(currentUser.userId,prefs);
+  if(checked) saveSession(currentUser);
+  else lsDel('rm_session');
+  showToast(checked?'Session will be remembered':'Session will not be remembered');
+};
+
+/* ─────────────────────────────── NOTIFICATIONS ────────────────────── */
+window.onNotifyToggle = function(checked){
+  var prefs=getUserPrefs(currentUser.userId);
+  if(checked){
+    if(!('Notification' in window)){ showToast('Notifications not supported'); return; }
+    Notification.requestPermission().then(function(p){
+      if(p==='granted'){
+        prefs.notify=true;
+        saveUserPrefs(currentUser.userId,prefs);
+        scheduleNotify();
+        showToast('Daily reminders enabled at 9 AM');
       } else {
-        link.classList.remove('active');
+        document.getElementById('tog-notify').checked=false;
+        showToast('Permission denied for notifications');
       }
     });
+  } else {
+    prefs.notify=false;
+    saveUserPrefs(currentUser.userId,prefs);
+    clearTimeout(notifyTimer);
+    showToast('Daily reminders disabled');
+  }
+};
+
+function scheduleNotify(){
+  clearTimeout(notifyTimer);
+  var now=new Date(), next=new Date(now);
+  next.setHours(9,0,0,0);
+  if(next<=now) next.setDate(next.getDate()+1);
+  notifyTimer=setTimeout(function(){
+    var data=getUserData(currentUser.userId);
+    var done=Object.keys(data.done).filter(function(k){return data.done[k];}).length;
+    new Notification('JS Roadmap Reminder',{
+      body:'Day '+done+'/56 complete. Keep your streak going!',
+      icon:''
+    });
+    scheduleNotify();
+  }, next-now);
+}
+
+/* ─────────────────────────────── PROGRESS EMAIL / COPY ─────────────── */
+function buildProgressReport(){
+  var data=getUserData(currentUser.userId);
+  var done=Object.keys(data.done).filter(function(k){return data.done[k];}).length;
+  var pct=Math.round(done/56*100);
+  var streak=calcStreak(data);
+  return [
+    'JS Roadmap Progress Update',
+    '================================',
+    'Name     : '+(currentUser.name||'Guest'),
+    'Done     : '+done+' / 56 days',
+    'Progress : '+pct+'%',
+    'Streak   : '+streak+' day'+(streak===1?'':'s'),
+    '================================',
+    'Keep going!'
+  ].join('\n');
+}
+
+window.emailProgress = function(){
+  var report=buildProgressReport();
+  var to=currentUser.email||'';
+  var subject=encodeURIComponent('JS Roadmap Progress — '+Math.round(Object.keys(getUserData(currentUser.userId).done).filter(function(k){return getUserData(currentUser.userId).done[k];}).length/56*100)+'% complete');
+  var body=encodeURIComponent(report);
+  window.location.href='mailto:'+to+'?subject='+subject+'&body='+body;
+};
+
+window.copyProgress = function(){
+  var r=buildProgressReport();
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(r).then(function(){ showToast('Progress copied to clipboard'); });
+  } else {
+    var ta=document.createElement('textarea');
+    ta.value=r; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('Progress copied to clipboard');
+  }
+};
+
+/* ─────────────────────────────── TRACKER ──────────────────────────── */
+function calcStreak(data){
+  var today=dayIdx(data, todayStr());
+  if(today<1) return 0;
+  var up=Math.min(today,56), streak=0;
+  for(var i=up;i>=1;i--){ if(data.done[i]) streak++; else break; }
+  return streak;
+}
+
+function dayIdx(data,dateStr){
+  var start=parseDate(data.startDate||localDateStr());
+  return Math.round((parseDate(dateStr)-start)/864e5)+1;
+}
+
+function dateOfDay(data,idx){
+  var start=parseDate(data.startDate||localDateStr());
+  var d=new Date(start.getTime()+(idx-1)*864e5);
+  return localDateStr(d);
+}
+
+function updateStats(uid){
+  var data=getUserData(uid);
+  var done=Object.keys(data.done).filter(function(k){return data.done[k];}).length;
+  var pct=Math.round(done/56*100);
+  var streak=calcStreak(data);
+  var endD=parseDate(data.startDate||localDateStr());
+  endD=new Date(endD.getTime()+55*864e5);
+  se('stat-done', done);
+  se('stat-left', 56-done);
+  se('stat-streak', streak);
+  se('stat-pct', pct+'%');
+  se('stat-end', endD.toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
+  var pf=document.getElementById('pb-fill');
+  if(pf) pf.style.width=pct+'%';
+  se('pb-label-left', done+' of 56 days completed');
+  se('pb-label-right', pct+'%');
+  var sl=document.getElementById('start-label');
+  if(sl&&data.startDate){
+    sl.textContent='Started: '+parseDate(data.startDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  }
+}
+
+function se(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+
+function buildTracker(){
+  var uid=currentUser.userId;
+  var data=getUserData(uid);
+  if(!data.startDate){ data.startDate=localDateStr(); saveUserData(uid,data); }
+
+  var body=document.getElementById('tracker-body');
+  body.innerHTML='';
+  var today=dayIdx(data,todayStr());
+
+  for(var w=0;w<8;w++){
+    var wDiv=document.createElement('div'); wDiv.className='week-row';
+    var wLbl=document.createElement('div'); wLbl.className='week-row-label';
+    wLbl.textContent='Week '+(w+1);
+    wDiv.appendChild(wLbl);
+    var row=document.createElement('div'); row.className='days-row';
+    for(var d=1;d<=7;d++){
+      var num=w*7+d;
+      var tile=document.createElement('div'); tile.className='t-day';
+      if(data.done[num]) tile.classList.add('done');
+      if(num===today) tile.classList.add('today');
+      var ds=dateOfDay(data,num);
+      var do2=parseDate(ds);
+      var dn=document.createElement('div'); dn.className='dn'; dn.textContent=num;
+      var dw=document.createElement('div'); dw.className='dw'; dw.textContent=WDAYS[do2.getDay()];
+      tile.appendChild(dn); tile.appendChild(dw);
+      tile.title='Day '+num+' — '+do2.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+      (function(n,el){
+        el.addEventListener('click',function(){
+          var d2=getUserData(uid);
+          if(d2.done[n]) delete d2.done[n];
+          else d2.done[n]=true;
+          saveUserData(uid,d2);
+          el.classList.toggle('done', !!d2.done[n]);
+          updateStats(uid);
+        });
+      })(num,tile);
+      row.appendChild(tile);
+    }
+    wDiv.appendChild(row); body.appendChild(wDiv);
   }
 
-  if ('IntersectionObserver' in window) {
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          setActive(entry.target.id);
-        }
-      });
-    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+  updateStats(uid);
 
-    sections.forEach(function(s) { observer.observe(s); });
+  document.getElementById('reset-btn').onclick=function(){
+    if(!confirm('Reset all progress?')) return;
+    var d2=getUserData(uid);
+    d2.done={}; d2.startDate=localDateStr();
+    saveUserData(uid,d2);
+    buildTracker();
+  };
+}
+
+/* ─────────────────────────────── SCROLL SPY ───────────────────────── */
+function initScrollSpy(){
+  var sections=document.querySelectorAll('.section[id]');
+  var links=document.querySelectorAll('.nav-link');
+  if(!('IntersectionObserver' in window)) return;
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(l){
+          var active=l.getAttribute('href')==='#'+e.target.id;
+          l.classList.toggle('active',active);
+          if(active) l.scrollIntoView&&l.scrollIntoView({inline:'nearest',block:'nearest'});
+        });
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px',threshold:0});
+  sections.forEach(function(s){obs.observe(s);});
+}
+
+/* ─────────────────────────────── BOOTSTRAP ────────────────────────── */
+(function init(){
+  /* file:// → auto guest */
+  if(IS_FILE){
+    continueAsGuest();
+    return;
   }
 
+  /* Try restore session */
+  var saved=loadSession();
+  if(saved){
+    loginUser(saved);
+    return;
+  }
+
+  /* Show auth */
+  showAuthScreen();
+
+  /* If Google auth available, init One Tap */
+  if(USE_GOOGLE){
+    /* Wait for GIS library */
+    var tries=0;
+    var wait=setInterval(function(){
+      tries++;
+      if(typeof google!=='undefined'&&google.accounts){
+        clearInterval(wait);
+        google.accounts.id.initialize({
+          client_id:GOOGLE_CLIENT_ID,
+          callback:handleGoogleCredential,
+          auto_select:true,
+          cancel_on_tap_outside:false
+        });
+        google.accounts.id.prompt();
+      }
+      if(tries>20) clearInterval(wait);
+    },300);
+  }
 })();
-</script>
 
+})(); /* end IIFE */
+</script>
 </body>
 </html>
