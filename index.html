@@ -8,7 +8,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="description" content="2-Month JavaScript to React Roadmap — sign in to track your progress.">
 <title>JS Roadmap to React</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://accounts.google.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <!-- ============================================================
@@ -27,6 +30,14 @@
      ============================================================ -->
 
 <style>
+/* ===================== PERFORMANCE HINTS ===================== */
+.tracker-wrap { contain: layout style; }
+.days-row { contain: layout; }
+#account-panel { will-change: right; }
+.pb-fill { will-change: width; }
+.t-day { will-change: border-color, background; }
+*:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
 /* ===================== THEME VARIABLES ===================== */
 :root {
   --bg:#f7f6f3; --surface:#fff; --surface2:#f0efe9;
@@ -493,6 +504,7 @@ a.chip:hover{opacity:.8}
       <a class="nav-link" href="#week78">Week 7–8</a>
       <a class="nav-link" href="#problems">Problems</a>
       <a class="nav-link" href="#tracker">Tracker</a>
+      <a class="nav-link" href="#contact">Contact</a>
     </div>
   </nav>
 
@@ -739,8 +751,8 @@ a.chip:hover{opacity:.8}
 </div><!-- end #app -->
 
 <!-- ============ ACCOUNT PANEL ============ -->
-<div id="panel-overlay" onclick="closePanel()"></div>
-<div id="account-panel">
+<div id="panel-overlay" onclick="closePanel()" aria-hidden="true"></div>
+<div id="account-panel" role="dialog" aria-modal="true" aria-label="Account settings">
   <div class="ap-head">
     <span class="ap-title">My Account</span>
     <button class="ap-close" onclick="closePanel()">&#x2715;</button>
@@ -786,7 +798,8 @@ a.chip:hover{opacity:.8}
     </button>
   </div>
 
-  <div class="ap-section" style="margin-top:auto">
+  <div style="flex:1;min-height:16px"></div>
+  <div class="ap-section">
     <button class="ap-btn danger" onclick="signOut()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       Sign out
@@ -801,495 +814,651 @@ a.chip:hover{opacity:.8}
      JAVASCRIPT
      =================================================================== -->
 <script>
-(function() {
+/**
+ * JS Roadmap to React — App v2.0
+ * Architecture: single IIFE module, no global pollution except window.* handlers
+ * required by inline HTML event attributes.
+ */
+;(function(W) {
+'use strict';
 
-/* ── CONFIG ── replace with your real Google Client ID ── */
-var GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
+/* ═══════════════════════════════════════════════════════
+   CONFIG — replace with real Google Client ID
+   ═══════════════════════════════════════════════════════ */
+var G_CLIENT_ID = '171911142489-mf1rppb3f05vq5n7311oisd47mp3dg5e.apps.googleusercontent.com';
 
-/* ── STATE ── */
-var currentUser = null;
-var IS_FILE     = window.location.protocol === 'file:';
-var HAS_CID     = GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID';
-var USE_GOOGLE  = HAS_CID && !IS_FILE;
-var WDAYS       = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-var toastTimer  = null;
-var notifyTimer = null;
+/* ═══════════════════════════════════════════════════════
+   CONSTANTS
+   ═══════════════════════════════════════════════════════ */
+var WDAYS    = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+var IS_FILE  = W.location.protocol === 'file:';
+var HAS_CID  = G_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID';
+var USE_G    = HAS_CID && !IS_FILE;
+var SESSION_TTL = 30 * 864e5; // 30 days in ms
 
-/* ─────────────────────────────── DATE HELPERS ─────────────────────── */
-function pad(n){ return n<10?'0'+n:''+n; }
-function localDateStr(d){
-  d = d||new Date();
-  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+/* ═══════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════ */
+var state = {
+  user: null,
+  toastTimer: null,
+  notifyTimer: null,
+  panelOpen: false,
+  prevFocus: null   // for focus trap restore
+};
+
+/* ═══════════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════════ */
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+function localDateStr(d) {
+  d = d || new Date();
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
 }
-function todayStr(){ return localDateStr(); }
-function parseDate(s){ var p=s.split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+function todayStr() { return localDateStr(); }
+function parseDate(s) { var p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
 
-/* ─────────────────────────────── STORAGE ──────────────────────────── */
-function ls(k,v){
-  try{ if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v); }catch(e){}
-}
-function lsDel(k){ try{localStorage.removeItem(k);}catch(e){} }
+function $(id) { return document.getElementById(id); }
+function setText(id, v) { var el = $(id); if (el) el.textContent = v; }
 
-function saveSession(u){
-  ls('rm_session', JSON.stringify({...u, savedAt:Date.now()}));
-}
-function loadSession(){
-  try{
-    var s=JSON.parse(ls('rm_session')||'null');
-    if(!s) return null;
-    if(Date.now()-s.savedAt > 30*864e5){ lsDel('rm_session'); return null; }
-    return s;
-  }catch(e){ return null; }
-}
-
-function getUserData(uid){
-  try{ return JSON.parse(ls('rm_data_'+uid)||'{"done":{},"startDate":null}'); }
-  catch(e){ return {done:{},startDate:null}; }
-}
-function saveUserData(uid,data){ ls('rm_data_'+uid, JSON.stringify(data)); }
-
-function getUserPrefs(uid){
-  try{ return JSON.parse(ls('rm_prefs_'+uid)||'{"theme":"light","saveSession":true,"notify":false}'); }
-  catch(e){ return {theme:'light',saveSession:true,notify:false}; }
-}
-function saveUserPrefs(uid,prefs){ ls('rm_prefs_'+uid, JSON.stringify(prefs)); }
-
-function getAvatar(uid){ return ls('rm_avatar_'+uid)||null; }
-function saveAvatar(uid,b64){ ls('rm_avatar_'+uid,b64); }
-
-/* ─────────────────────────────── TOAST ────────────────────────────── */
-function showToast(msg){
-  var t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(function(){ t.classList.remove('show'); },2800);
-}
-
-/* ─────────────────────────────── THEME ────────────────────────────── */
-function applyTheme(theme){
-  document.documentElement.setAttribute('data-theme',theme);
-  document.getElementById('meta-theme-color').content = theme==='dark'?'#0d0f14':'#f7f6f3';
-  var sun=document.getElementById('theme-icon-sun');
-  var moon=document.getElementById('theme-icon-moon');
-  if(sun&&moon){
-    sun.style.display  = theme==='dark' ?'block':'none';
-    moon.style.display = theme==='dark' ?'none' :'block';
+/* ═══════════════════════════════════════════════════════
+   STORAGE — with quota-exceeded guard and recovery
+   ═══════════════════════════════════════════════════════ */
+var Store = (function() {
+  function get(k) {
+    try { return localStorage.getItem(k); } catch(e) { return null; }
   }
-  var tog=document.getElementById('tog-dark');
-  if(tog) tog.checked = theme==='dark';
-}
-window.toggleTheme = function(){
-  var prefs=getUserPrefs(currentUser?currentUser.userId:'__guest');
-  prefs.theme = prefs.theme==='dark'?'light':'dark';
-  applyTheme(prefs.theme);
-  if(currentUser) saveUserPrefs(currentUser.userId,prefs);
-};
-window.onDarkModeToggle = function(checked){
-  var prefs=getUserPrefs(currentUser?currentUser.userId:'__guest');
-  prefs.theme=checked?'dark':'light';
-  applyTheme(prefs.theme);
-  if(currentUser) saveUserPrefs(currentUser.userId,prefs);
-};
-
-/* ─────────────────────────────── AUTH ─────────────────────────────── */
-function showAuthScreen(){
-  document.getElementById('auth-screen').classList.add('active');
-  document.getElementById('app').style.display='none';
-  if(!USE_GOOGLE){
-    var btn=document.getElementById('google-btn-wrap');
-    if(btn) btn.style.display='none';
-    if(!HAS_CID && !IS_FILE){
-      var n=document.getElementById('setup-notice');
-      if(n) n.style.display='block';
+  function set(k, v) {
+    try {
+      localStorage.setItem(k, v);
+      return true;
+    } catch(e) {
+      /* QuotaExceededError — try to free space by clearing avatar cache */
+      if (e.name === 'QuotaExceededError' || e.code === 22) {
+        try {
+          var keys = Object.keys(localStorage).filter(function(x) { return x.indexOf('rm_avatar_') === 0; });
+          keys.forEach(function(k2) { localStorage.removeItem(k2); });
+          localStorage.setItem(k, v);
+          return true;
+        } catch(e2) { return false; }
+      }
+      return false;
     }
   }
+  function del(k) { try { localStorage.removeItem(k); } catch(e) {} }
+  function getJSON(k, fallback) {
+    try { var v = get(k); return v ? JSON.parse(v) : fallback; } catch(e) { return fallback; }
+  }
+  function setJSON(k, v) { return set(k, JSON.stringify(v)); }
+  return { get: get, set: set, del: del, getJSON: getJSON, setJSON: setJSON };
+})();
+
+/* ═══════════════════════════════════════════════════════
+   USER DATA MODEL
+   ═══════════════════════════════════════════════════════ */
+function userData(uid) {
+  return Store.getJSON('rm_data_' + uid, { done: {}, startDate: null });
+}
+function saveData(uid, data) { Store.setJSON('rm_data_' + uid, data); }
+
+function userPrefs(uid) {
+  return Store.getJSON('rm_prefs_' + uid, { theme: 'light', saveSession: true, notify: false });
+}
+function savePrefs(uid, prefs) { Store.setJSON('rm_prefs_' + uid, prefs); }
+
+function getAvatar(uid) { return Store.get('rm_avatar_' + uid); }
+function saveAvatar(uid, b64) { Store.set('rm_avatar_' + uid, b64); }
+
+/* ═══════════════════════════════════════════════════════
+   SESSION
+   ═══════════════════════════════════════════════════════ */
+function saveSession(u) {
+  Store.setJSON('rm_session', Object.assign({}, u, { savedAt: Date.now() }));
+}
+function loadSession() {
+  var s = Store.getJSON('rm_session', null);
+  if (!s) return null;
+  if (Date.now() - s.savedAt > SESSION_TTL) { Store.del('rm_session'); return null; }
+  return s;
 }
 
-function loginUser(u){
-  currentUser=u;
-  document.getElementById('auth-screen').classList.remove('active');
-  document.getElementById('app').style.display='block';
+/* ═══════════════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════════════ */
+function toast(msg, dur) {
+  var el = $('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(state.toastTimer);
+  state.toastTimer = setTimeout(function() { el.classList.remove('show'); }, dur || 2800);
+}
 
-  /* Apply saved prefs */
-  var prefs=getUserPrefs(u.userId);
+/* ═══════════════════════════════════════════════════════
+   THEME
+   ═══════════════════════════════════════════════════════ */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  var mc = $('meta-theme-color');
+  if (mc) mc.content = theme === 'dark' ? '#0d0f14' : '#f7f6f3';
+  var sun  = $('theme-icon-sun');
+  var moon = $('theme-icon-moon');
+  if (sun)  sun.style.display  = theme === 'dark' ? 'block' : 'none';
+  if (moon) moon.style.display = theme === 'dark' ? 'none'  : 'block';
+  var td = $('tog-dark');
+  if (td) td.checked = theme === 'dark';
+}
+
+W.toggleTheme = function() {
+  var uid   = state.user ? state.user.userId : '__guest';
+  var prefs = userPrefs(uid);
+  prefs.theme = prefs.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(prefs.theme);
+  savePrefs(uid, prefs);
+};
+W.onDarkModeToggle = function(checked) {
+  var uid   = state.user ? state.user.userId : '__guest';
+  var prefs = userPrefs(uid);
+  prefs.theme = checked ? 'dark' : 'light';
+  applyTheme(prefs.theme);
+  savePrefs(uid, prefs);
+};
+
+/* ═══════════════════════════════════════════════════════
+   ACCOUNT PANEL — with focus trap
+   ═══════════════════════════════════════════════════════ */
+var FOCUSABLE = 'a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])';
+
+function trapFocus(e) {
+  var panel = $('account-panel');
+  if (!panel) return;
+  var els = Array.prototype.slice.call(panel.querySelectorAll(FOCUSABLE)).filter(function(el) {
+    return el.offsetParent !== null;
+  });
+  if (!els.length) return;
+  var first = els[0], last = els[els.length - 1];
+  if (e.key === 'Tab') {
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }
+  if (e.key === 'Escape') { closePanel(); }
+}
+
+W.openPanel = function() {
+  state.prevFocus = document.activeElement;
+  state.panelOpen = true;
+  $('account-panel').classList.add('open');
+  $('panel-overlay').classList.add('open');
+  $('panel-overlay').removeAttribute('aria-hidden');
+  document.addEventListener('keydown', trapFocus);
+  /* Focus first interactive element */
+  setTimeout(function() {
+    var first = $('account-panel').querySelector(FOCUSABLE);
+    if (first) first.focus();
+  }, 50);
+};
+
+W.closePanel = function() {
+  state.panelOpen = false;
+  $('account-panel').classList.remove('open');
+  $('panel-overlay').classList.add('open');
+  $('panel-overlay').setAttribute('aria-hidden', 'true');
+  $('panel-overlay').classList.remove('open');
+  document.removeEventListener('keydown', trapFocus);
+  if (state.prevFocus) { state.prevFocus.focus(); state.prevFocus = null; }
+};
+
+/* ═══════════════════════════════════════════════════════
+   AUTH
+   ═══════════════════════════════════════════════════════ */
+function showAuth() {
+  $('auth-screen').classList.add('active');
+  $('app').style.display = 'none';
+  /* If no Client ID configured and not a file — show setup notice */
+  if (!HAS_CID && !IS_FILE) {
+    var n = $('setup-notice');
+    if (n) n.style.display = 'block';
+  }
+  /* If IS_FILE, hide Google button (can't use Google auth from file://) */
+  if (IS_FILE || !USE_G) {
+    var gw = $('google-btn-wrap');
+    if (gw) gw.style.display = 'none';
+  }
+}
+
+function loginUser(u) {
+  state.user = u;
+  $('auth-screen').classList.remove('active');
+  $('app').style.display = 'block';
+
+  /* Apply saved preferences */
+  var prefs = userPrefs(u.userId);
   applyTheme(prefs.theme);
 
-  /* Update UI */
-  updateUserUI(u);
+  /* Populate UI */
+  syncUserUI(u);
 
-  /* Init tracker */
+  /* Build tracker */
   buildTracker();
 
-  /* Init scroll-spy */
+  /* Scroll spy */
   initScrollSpy();
 
-  /* Save session if allowed */
-  if(prefs.saveSession) saveSession(u);
+  /* Session persistence */
+  if (prefs.saveSession) saveSession(u);
 
-  /* Notification reminder */
-  if(prefs.notify) scheduleNotify();
+  /* Notification scheduler */
+  if (prefs.notify) scheduleNotify();
 }
 
-function updateUserUI(u){
-  /* Hero */
-  var hn=document.getElementById('hero-username');
-  if(hn) hn.textContent = u.name||'Guest';
-
-  /* Topbar avatar */
+function syncUserUI(u) {
+  var hn = $('hero-username');
+  if (hn) hn.textContent = u.name || 'Guest';
   renderAvatar(u);
 
-  /* Panel */
-  var pn=document.getElementById('ap-user-name');
-  var pe=document.getElementById('ap-user-email');
-  var pb=document.getElementById('ap-badge');
-  if(pn) pn.textContent = u.name||'Guest';
-  if(pe) pe.textContent = u.email||'Local account';
-  if(pb){
-    pb.textContent = u.isGuest?'Guest':'Google Account';
-    pb.className = 'ap-badge '+(u.isGuest?'guest':'google');
+  setText('ap-user-name',  u.name  || 'Guest');
+  setText('ap-user-email', u.email || 'Local account');
+
+  var badge = $('ap-badge');
+  if (badge) {
+    badge.textContent  = u.isGuest ? 'Guest' : 'Google Account';
+    badge.className    = 'ap-badge ' + (u.isGuest ? 'guest' : 'google');
   }
-  /* Panel prefs */
-  var prefs=getUserPrefs(u.userId);
-  var ts=document.getElementById('tog-save');
-  var tn=document.getElementById('tog-notify');
-  if(ts) ts.checked=!!prefs.saveSession;
-  if(tn) tn.checked=!!prefs.notify;
+
+  var prefs = userPrefs(u.userId);
+  var ts = $('tog-save'), tn = $('tog-notify'), td = $('tog-dark');
+  if (ts) ts.checked = !!prefs.saveSession;
+  if (tn) tn.checked = !!prefs.notify;
+  if (td) td.checked = prefs.theme === 'dark';
 }
 
-function renderAvatar(u){
-  var localAv=getAvatar(u.userId);
-  var btn=document.getElementById('avatar-topbar-btn');
-  var apAv=document.getElementById('ap-avatar-display');
-  var apIn=document.getElementById('ap-avatar-initials');
-  var topIn=document.getElementById('avatar-initials');
+function renderAvatar(u) {
+  var src = getAvatar(u.userId) || (!u.isGuest && u.picture ? u.picture : null);
+  var init = (u.name || 'G').charAt(0).toUpperCase();
 
-  if(localAv){
-    if(btn) btn.innerHTML='<img src="'+localAv+'" alt="avatar">';
-    if(apAv) apAv.innerHTML='<img src="'+localAv+'" alt="avatar">';
-  } else if(u.picture && !u.isGuest){
-    if(btn) btn.innerHTML='<img src="'+u.picture+'" alt="avatar">';
-    if(apAv) apAv.innerHTML='<img src="'+u.picture+'" alt="avatar">';
-  } else {
-    var init=(u.name||'G').charAt(0).toUpperCase();
-    if(btn){ btn.innerHTML='<span id="avatar-initials">'+init+'</span>'; }
-    if(apAv) apAv.innerHTML='<span id="ap-avatar-initials">'+init+'</span>';
+  function applyToEl(el) {
+    if (!el) return;
+    if (src) {
+      var img = document.createElement('img');
+      img.src = src; img.alt = u.name || 'avatar';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit';
+      el.innerHTML = '';
+      el.appendChild(img);
+    } else {
+      el.innerHTML = '';
+      el.textContent = init;
+    }
   }
+  applyToEl($('avatar-topbar-btn'));
+  applyToEl($('ap-avatar-display'));
 }
 
-/* Google callback */
-window.handleGoogleCredential = function(response){
-  try{
-    var parts=response.credential.split('.');
-    var payload=JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
-    var u={
-      userId:'g_'+payload.sub,
-      name:payload.name,
-      email:payload.email,
-      picture:payload.picture,
-      isGuest:false
-    };
-    loginUser(u);
-  }catch(e){ showToast('Sign-in failed. Please try again.'); }
+/* Google Sign-In */
+W.handleGoogleCredential = function(response) {
+  try {
+    var payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    loginUser({
+      userId:  'g_' + payload.sub,
+      name:    payload.name,
+      email:   payload.email,
+      picture: payload.picture,
+      isGuest: false
+    });
+  } catch(e) {
+    toast('Sign-in failed — please try again.');
+  }
 };
 
-window.triggerGoogleSignIn = function(){
-  if(typeof google==='undefined'||!google.accounts){
-    showToast('Google auth not available. Use Guest mode.');
-    return;
+W.triggerGoogleSignIn = function() {
+  if (typeof google === 'undefined' || !google.accounts) {
+    toast('Google auth unavailable. Use Guest mode.'); return;
   }
-  google.accounts.id.initialize({
-    client_id:GOOGLE_CLIENT_ID,
-    callback:handleGoogleCredential,
-    auto_select:false
-  });
-  google.accounts.id.prompt(function(n){
-    if(n.isNotDisplayed()||n.isSkippedMoment()){
-      // One Tap blocked, use renderButton fallback
-      var c=document.createElement('div');
-      document.body.appendChild(c);
-      google.accounts.id.renderButton(c,{theme:'outline',size:'large',width:280,text:'continue_with'});
-      c.querySelector('div[role=button]')&&c.querySelector('div[role=button]').click();
+  google.accounts.id.initialize({ client_id: G_CLIENT_ID, callback: W.handleGoogleCredential, auto_select: false });
+  google.accounts.id.prompt(function(n) {
+    if (n.isNotDisplayed() || n.isSkippedMoment()) {
+      /* One Tap blocked — render button overlay on auth card */
+      var wrap = $('google-btn-wrap');
+      if (wrap) {
+        wrap.innerHTML = '';
+        google.accounts.id.renderButton(wrap, { theme: 'outline', size: 'large', width: 280, text: 'continue_with' });
+      }
     }
   });
 };
 
-window.continueAsGuest = function(){
-  var gid=ls('rm_guest_id');
-  if(!gid){ gid='guest_'+Math.random().toString(36).substr(2,9); ls('rm_guest_id',gid); }
-  loginUser({ userId:gid, name:'Guest', email:null, picture:null, isGuest:true });
+W.continueAsGuest = function() {
+  var gid = Store.get('rm_guest_id');
+  if (!gid) { gid = 'guest_' + Math.random().toString(36).substr(2, 9); Store.set('rm_guest_id', gid); }
+  loginUser({ userId: gid, name: 'Guest', email: null, picture: null, isGuest: true });
 };
 
-window.signOut = function(){
-  if(!confirm('Sign out? Your progress stays saved on this device.')) return;
-  lsDel('rm_session');
-  currentUser=null;
+W.signOut = function() {
+  if (!confirm('Sign out? Your progress stays saved on this device.')) return;
+  Store.del('rm_session');
+  if (typeof google !== 'undefined' && google.accounts) { try { google.accounts.id.disableAutoSelect(); } catch(e) {} }
+  state.user = null;
   closePanel();
-  showAuthScreen();
+  showAuth();
 };
 
-/* ─────────────────────────────── ACCOUNT PANEL ────────────────────── */
-window.openPanel = function(){
-  document.getElementById('account-panel').classList.add('open');
-  document.getElementById('panel-overlay').classList.add('open');
-};
-window.closePanel = function(){
-  document.getElementById('account-panel').classList.remove('open');
-  document.getElementById('panel-overlay').classList.remove('open');
-};
-
-window.handleAvatarUpload = function(e){
-  var f=e.target.files[0]; if(!f) return;
-  var r=new FileReader();
-  r.onload=function(ev){
-    saveAvatar(currentUser.userId, ev.target.result);
-    renderAvatar(currentUser);
-    showToast('Profile photo updated');
+/* ═══════════════════════════════════════════════════════
+   AVATAR UPLOAD
+   ═══════════════════════════════════════════════════════ */
+W.handleAvatarUpload = function(e) {
+  var f = e.target.files[0]; if (!f) return;
+  /* Validate: must be image, max 2MB */
+  if (!f.type.startsWith('image/')) { toast('Please select an image file.'); return; }
+  if (f.size > 2 * 1024 * 1024) { toast('Image must be under 2 MB.'); return; }
+  var r = new FileReader();
+  r.onload = function(ev) {
+    /* Resize to max 120x120 before storing — saves localStorage space */
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var size = Math.min(120, img.width, img.height);
+      canvas.width = size; canvas.height = size;
+      var ctx = canvas.getContext('2d');
+      var sx = (img.width  - size) / 2;
+      var sy = (img.height - size) / 2;
+      ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
+      var b64 = canvas.toDataURL('image/jpeg', 0.85);
+      saveAvatar(state.user.userId, b64);
+      renderAvatar(state.user);
+      toast('Profile photo updated');
+    };
+    img.src = ev.target.result;
   };
   r.readAsDataURL(f);
 };
 
-window.onSaveSessionToggle = function(checked){
-  var prefs=getUserPrefs(currentUser.userId);
-  prefs.saveSession=checked;
-  saveUserPrefs(currentUser.userId,prefs);
-  if(checked) saveSession(currentUser);
-  else lsDel('rm_session');
-  showToast(checked?'Session will be remembered':'Session will not be remembered');
+/* ═══════════════════════════════════════════════════════
+   PREFERENCES HANDLERS
+   ═══════════════════════════════════════════════════════ */
+W.onSaveSessionToggle = function(checked) {
+  var prefs = userPrefs(state.user.userId);
+  prefs.saveSession = checked;
+  savePrefs(state.user.userId, prefs);
+  if (checked) saveSession(state.user); else Store.del('rm_session');
+  toast(checked ? 'Session will be remembered' : 'Session cleared');
 };
 
-/* ─────────────────────────────── NOTIFICATIONS ────────────────────── */
-window.onNotifyToggle = function(checked){
-  var prefs=getUserPrefs(currentUser.userId);
-  if(checked){
-    if(!('Notification' in window)){ showToast('Notifications not supported'); return; }
-    Notification.requestPermission().then(function(p){
-      if(p==='granted'){
-        prefs.notify=true;
-        saveUserPrefs(currentUser.userId,prefs);
-        scheduleNotify();
-        showToast('Daily reminders enabled at 9 AM');
+W.onNotifyToggle = function(checked) {
+  var prefs = userPrefs(state.user.userId);
+  if (checked) {
+    if (!('Notification' in W)) { toast('Notifications not supported'); $('tog-notify').checked = false; return; }
+    Notification.requestPermission().then(function(p) {
+      if (p === 'granted') {
+        prefs.notify = true; savePrefs(state.user.userId, prefs);
+        scheduleNotify(); toast('Daily reminders enabled at 9 AM');
       } else {
-        document.getElementById('tog-notify').checked=false;
-        showToast('Permission denied for notifications');
+        $('tog-notify').checked = false; toast('Notification permission denied');
       }
     });
   } else {
-    prefs.notify=false;
-    saveUserPrefs(currentUser.userId,prefs);
-    clearTimeout(notifyTimer);
-    showToast('Daily reminders disabled');
+    prefs.notify = false; savePrefs(state.user.userId, prefs);
+    clearTimeout(state.notifyTimer); toast('Daily reminders disabled');
   }
 };
 
-function scheduleNotify(){
-  clearTimeout(notifyTimer);
-  var now=new Date(), next=new Date(now);
-  next.setHours(9,0,0,0);
-  if(next<=now) next.setDate(next.getDate()+1);
-  notifyTimer=setTimeout(function(){
-    var data=getUserData(currentUser.userId);
-    var done=Object.keys(data.done).filter(function(k){return data.done[k];}).length;
-    new Notification('JS Roadmap Reminder',{
-      body:'Day '+done+'/56 complete. Keep your streak going!',
-      icon:''
-    });
+/* ═══════════════════════════════════════════════════════
+   NOTIFICATIONS
+   ═══════════════════════════════════════════════════════ */
+function scheduleNotify() {
+  clearTimeout(state.notifyTimer);
+  var now  = new Date(), next = new Date(now);
+  next.setHours(9, 0, 0, 0);
+  if (next <= now) next.setDate(next.getDate() + 1);
+  state.notifyTimer = setTimeout(function() {
+    var data = userData(state.user.userId);
+    var done = Object.keys(data.done).filter(function(k) { return data.done[k]; }).length;
+    try {
+      new Notification('JS Roadmap Reminder', {
+        body: 'Day ' + done + '/56 complete. Keep your streak going!',
+        icon: ''
+      });
+    } catch(e) {}
     scheduleNotify();
-  }, next-now);
+  }, next - now);
 }
 
-/* ─────────────────────────────── PROGRESS EMAIL / COPY ─────────────── */
-function buildProgressReport(){
-  var data=getUserData(currentUser.userId);
-  var done=Object.keys(data.done).filter(function(k){return data.done[k];}).length;
-  var pct=Math.round(done/56*100);
-  var streak=calcStreak(data);
-  return [
-    'JS Roadmap Progress Update',
-    '================================',
-    'Name     : '+(currentUser.name||'Guest'),
-    'Done     : '+done+' / 56 days',
-    'Progress : '+pct+'%',
-    'Streak   : '+streak+' day'+(streak===1?'':'s'),
-    '================================',
-    'Keep going!'
-  ].join('\n');
-}
-
-window.emailProgress = function(){
-  var report=buildProgressReport();
-  var to=currentUser.email||'';
-  var subject=encodeURIComponent('JS Roadmap Progress — '+Math.round(Object.keys(getUserData(currentUser.userId).done).filter(function(k){return getUserData(currentUser.userId).done[k];}).length/56*100)+'% complete');
-  var body=encodeURIComponent(report);
-  window.location.href='mailto:'+to+'?subject='+subject+'&body='+body;
-};
-
-window.copyProgress = function(){
-  var r=buildProgressReport();
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(r).then(function(){ showToast('Progress copied to clipboard'); });
-  } else {
-    var ta=document.createElement('textarea');
-    ta.value=r; document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-    showToast('Progress copied to clipboard');
-  }
-};
-
-/* ─────────────────────────────── TRACKER ──────────────────────────── */
-function calcStreak(data){
-  var today=dayIdx(data, todayStr());
-  if(today<1) return 0;
-  var up=Math.min(today,56), streak=0;
-  for(var i=up;i>=1;i--){ if(data.done[i]) streak++; else break; }
-  return streak;
-}
-
-function dayIdx(data,dateStr){
-  var start=parseDate(data.startDate||localDateStr());
-  return Math.round((parseDate(dateStr)-start)/864e5)+1;
-}
-
-function dateOfDay(data,idx){
-  var start=parseDate(data.startDate||localDateStr());
-  var d=new Date(start.getTime()+(idx-1)*864e5);
-  return localDateStr(d);
-}
-
-function updateStats(uid){
-  var data=getUserData(uid);
-  var done=Object.keys(data.done).filter(function(k){return data.done[k];}).length;
-  var pct=Math.round(done/56*100);
-  var streak=calcStreak(data);
-  var endD=parseDate(data.startDate||localDateStr());
-  endD=new Date(endD.getTime()+55*864e5);
-  se('stat-done', done);
-  se('stat-left', 56-done);
-  se('stat-streak', streak);
-  se('stat-pct', pct+'%');
-  se('stat-end', endD.toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
-  var pf=document.getElementById('pb-fill');
-  if(pf) pf.style.width=pct+'%';
-  se('pb-label-left', done+' of 56 days completed');
-  se('pb-label-right', pct+'%');
-  var sl=document.getElementById('start-label');
-  if(sl&&data.startDate){
-    sl.textContent='Started: '+parseDate(data.startDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-  }
-}
-
-function se(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
-
-function buildTracker(){
-  var uid=currentUser.userId;
-  var data=getUserData(uid);
-  if(!data.startDate){ data.startDate=localDateStr(); saveUserData(uid,data); }
-
-  var body=document.getElementById('tracker-body');
-  body.innerHTML='';
-  var today=dayIdx(data,todayStr());
-
-  for(var w=0;w<8;w++){
-    var wDiv=document.createElement('div'); wDiv.className='week-row';
-    var wLbl=document.createElement('div'); wLbl.className='week-row-label';
-    wLbl.textContent='Week '+(w+1);
-    wDiv.appendChild(wLbl);
-    var row=document.createElement('div'); row.className='days-row';
-    for(var d=1;d<=7;d++){
-      var num=w*7+d;
-      var tile=document.createElement('div'); tile.className='t-day';
-      if(data.done[num]) tile.classList.add('done');
-      if(num===today) tile.classList.add('today');
-      var ds=dateOfDay(data,num);
-      var do2=parseDate(ds);
-      var dn=document.createElement('div'); dn.className='dn'; dn.textContent=num;
-      var dw=document.createElement('div'); dw.className='dw'; dw.textContent=WDAYS[do2.getDay()];
-      tile.appendChild(dn); tile.appendChild(dw);
-      tile.title='Day '+num+' — '+do2.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
-      (function(n,el){
-        el.addEventListener('click',function(){
-          var d2=getUserData(uid);
-          if(d2.done[n]) delete d2.done[n];
-          else d2.done[n]=true;
-          saveUserData(uid,d2);
-          el.classList.toggle('done', !!d2.done[n]);
-          updateStats(uid);
-        });
-      })(num,tile);
-      row.appendChild(tile);
-    }
-    wDiv.appendChild(row); body.appendChild(wDiv);
-  }
-
-  updateStats(uid);
-
-  document.getElementById('reset-btn').onclick=function(){
-    if(!confirm('Reset all progress?')) return;
-    var d2=getUserData(uid);
-    d2.done={}; d2.startDate=localDateStr();
-    saveUserData(uid,d2);
-    buildTracker();
+/* ═══════════════════════════════════════════════════════
+   PROGRESS REPORT — fixed: no double getUserData call
+   ═══════════════════════════════════════════════════════ */
+function buildReport() {
+  var uid  = state.user.userId;
+  var data = userData(uid);
+  var done = Object.keys(data.done).filter(function(k) { return data.done[k]; }).length;
+  var pct  = Math.round(done / 56 * 100);
+  var streak = calcStreak(data);
+  return {
+    done: done, pct: pct, streak: streak,
+    text: [
+      'JS Roadmap Progress Update',
+      '================================',
+      'Name     : ' + (state.user.name || 'Guest'),
+      'Done     : ' + done + ' / 56 days',
+      'Progress : ' + pct + '%',
+      'Streak   : ' + streak + ' day' + (streak === 1 ? '' : 's'),
+      '================================',
+      'Keep going!'
+    ].join('\n')
   };
 }
 
-/* ─────────────────────────────── SCROLL SPY ───────────────────────── */
-function initScrollSpy(){
-  var sections=document.querySelectorAll('.section[id]');
-  var links=document.querySelectorAll('.nav-link');
-  if(!('IntersectionObserver' in window)) return;
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){
-        links.forEach(function(l){
-          var active=l.getAttribute('href')==='#'+e.target.id;
-          l.classList.toggle('active',active);
-          if(active) l.scrollIntoView&&l.scrollIntoView({inline:'nearest',block:'nearest'});
-        });
-      }
-    });
-  },{rootMargin:'-20% 0px -70% 0px',threshold:0});
-  sections.forEach(function(s){obs.observe(s);});
+W.emailProgress = function() {
+  var report = buildReport();
+  var to      = state.user.email || '';
+  var subject = encodeURIComponent('JS Roadmap — ' + report.pct + '% complete');
+  var body    = encodeURIComponent(report.text);
+  W.location.href = 'mailto:' + to + '?subject=' + subject + '&body=' + body;
+};
+
+W.copyProgress = function() {
+  var text = buildReport().text;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() { toast('Progress copied to clipboard'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast('Progress copied to clipboard'); } catch(e) { toast('Copy failed — please copy manually'); }
+    document.body.removeChild(ta);
+  }
+};
+
+/* ═══════════════════════════════════════════════════════
+   TRACKER — uses DocumentFragment for 56 insertions
+   ═══════════════════════════════════════════════════════ */
+function dayIdx(data, dateStr) {
+  var start = parseDate(data.startDate || localDateStr());
+  return Math.round((parseDate(dateStr) - start) / 864e5) + 1;
+}
+function dateOfDay(data, idx) {
+  var start = parseDate(data.startDate || localDateStr());
+  return localDateStr(new Date(start.getTime() + (idx - 1) * 864e5));
+}
+function calcStreak(data) {
+  var today = dayIdx(data, todayStr());
+  if (today < 1) return 0;
+  var up = Math.min(today, 56), streak = 0;
+  for (var i = up; i >= 1; i--) { if (data.done[i]) streak++; else break; }
+  return streak;
 }
 
-/* ─────────────────────────────── BOOTSTRAP ────────────────────────── */
-(function init(){
-  /* file:// → auto guest */
-  if(IS_FILE){
-    continueAsGuest();
+function updateStats(uid) {
+  var data   = userData(uid);
+  var done   = Object.keys(data.done).filter(function(k) { return data.done[k]; }).length;
+  var pct    = Math.round(done / 56 * 100);
+  var streak = calcStreak(data);
+  var endD   = new Date(parseDate(data.startDate || localDateStr()).getTime() + 55 * 864e5);
+
+  setText('stat-done',    done);
+  setText('stat-left',    56 - done);
+  setText('stat-streak',  streak);
+  setText('stat-pct',     pct + '%');
+  setText('stat-end',     endD.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }));
+
+  var pf = $('pb-fill');
+  if (pf) pf.style.width = pct + '%';
+  setText('pb-label-left',  done + ' of 56 days completed');
+  setText('pb-label-right', pct + '%');
+
+  var sl = $('start-label');
+  if (sl && data.startDate) {
+    sl.textContent = 'Started: ' + parseDate(data.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+}
+
+function buildTracker() {
+  var uid  = state.user.userId;
+  var data = userData(uid);
+  if (!data.startDate) { data.startDate = localDateStr(); saveData(uid, data); }
+
+  var body  = $('tracker-body');
+  if (!body) return;
+  var today = dayIdx(data, todayStr());
+
+  /* Use DocumentFragment — single reflow instead of 56 */
+  var frag = document.createDocumentFragment();
+
+  for (var w = 0; w < 8; w++) {
+    var wDiv = document.createElement('div');
+    wDiv.className = 'week-row';
+    var wLbl = document.createElement('div');
+    wLbl.className = 'week-row-label';
+    wLbl.textContent = 'Week ' + (w + 1);
+    wDiv.appendChild(wLbl);
+
+    var row = document.createElement('div');
+    row.className = 'days-row';
+    row.setAttribute('role', 'group');
+    row.setAttribute('aria-label', 'Week ' + (w + 1));
+
+    for (var d = 1; d <= 7; d++) {
+      var num  = w * 7 + d;
+      var ds   = dateOfDay(data, num);
+      var do2  = parseDate(ds);
+      var tile = document.createElement('button');
+      tile.className = 't-day';
+      tile.type = 'button';
+      tile.setAttribute('aria-pressed', data.done[num] ? 'true' : 'false');
+      if (data.done[num]) tile.classList.add('done');
+      if (num === today)  tile.classList.add('today');
+
+      var label = 'Day ' + num + ' — ' + do2.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+      if (data.done[num]) label += ' (completed)';
+      tile.setAttribute('aria-label', label);
+      tile.title = label;
+
+      var dn = document.createElement('span'); dn.className = 'dn'; dn.textContent = num;
+      var dw = document.createElement('span'); dw.className = 'dw'; dw.textContent = WDAYS[do2.getDay()];
+      tile.appendChild(dn); tile.appendChild(dw);
+
+      tile.addEventListener('click', (function(n, el) {
+        return function() {
+          var d2 = userData(uid);
+          if (d2.done[n]) { delete d2.done[n]; } else { d2.done[n] = true; }
+          saveData(uid, d2);
+          var isDone = !!d2.done[n];
+          el.classList.toggle('done', isDone);
+          el.setAttribute('aria-pressed', isDone ? 'true' : 'false');
+          el.setAttribute('aria-label', el.getAttribute('aria-label').replace(' (completed)', '') + (isDone ? ' (completed)' : ''));
+          updateStats(uid);
+          /* Micro-celebration at 100% */
+          if (isDone && Object.keys(d2.done).filter(function(k){ return d2.done[k]; }).length === 56) {
+            toast('Congratulations — all 56 days complete!');
+          }
+        };
+      })(num, tile));
+
+      row.appendChild(tile);
+    }
+    wDiv.appendChild(row);
+    frag.appendChild(wDiv);
+  }
+
+  body.innerHTML = '';
+  body.appendChild(frag);
+  updateStats(uid);
+
+  $('reset-btn').onclick = function() {
+    if (!confirm('Reset all progress? This cannot be undone.')) return;
+    var d2 = userData(uid);
+    d2.done = {}; d2.startDate = localDateStr();
+    saveData(uid, d2);
+    buildTracker();
+    toast('Progress reset');
+  };
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCROLL SPY
+   ═══════════════════════════════════════════════════════ */
+function initScrollSpy() {
+  var sections = document.querySelectorAll('.section[id]');
+  var links    = document.querySelectorAll('.nav-link');
+  if (!('IntersectionObserver' in W)) return;
+
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (!e.isIntersecting) return;
+      links.forEach(function(l) {
+        var active = l.getAttribute('href') === '#' + e.target.id;
+        l.classList.toggle('active', active);
+        if (active) l.scrollIntoView && l.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+      });
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(function(s) { obs.observe(s); });
+}
+
+/* ═══════════════════════════════════════════════════════
+   BOOTSTRAP
+   ═══════════════════════════════════════════════════════ */
+(function init() {
+  /* file:// → auto guest, no Google */
+  if (IS_FILE) {
+    W.continueAsGuest();
     return;
   }
 
-  /* Try restore session */
-  var saved=loadSession();
-  if(saved){
+  /* Try restore saved session */
+  var saved = loadSession();
+  if (saved) {
     loginUser(saved);
     return;
   }
 
-  /* Show auth */
-  showAuthScreen();
+  /* Show auth screen */
+  showAuth();
 
-  /* If Google auth available, init One Tap */
-  if(USE_GOOGLE){
-    /* Wait for GIS library */
-    var tries=0;
-    var wait=setInterval(function(){
+  /* If Google auth configured — init One Tap */
+  if (USE_G) {
+    var tries = 0;
+    var poll = setInterval(function() {
       tries++;
-      if(typeof google!=='undefined'&&google.accounts){
-        clearInterval(wait);
+      if (typeof google !== 'undefined' && google.accounts) {
+        clearInterval(poll);
         google.accounts.id.initialize({
-          client_id:GOOGLE_CLIENT_ID,
-          callback:handleGoogleCredential,
-          auto_select:true,
-          cancel_on_tap_outside:false
+          client_id:           G_CLIENT_ID,
+          callback:            W.handleGoogleCredential,
+          auto_select:         true,
+          cancel_on_tap_outside: false
         });
         google.accounts.id.prompt();
       }
-      if(tries>20) clearInterval(wait);
-    },300);
+      if (tries > 30) clearInterval(poll); /* 9s timeout */
+    }, 300);
   }
 })();
 
-})(); /* end IIFE */
+})(window);
 </script>
+
 </body>
 </html>
